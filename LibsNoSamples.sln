@@ -36,6 +36,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Microsoft.Identity.Lab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Microsoft.Identity.SideBySide", "core\tests\Test.Microsoft.Identity.SideBySide\Test.Microsoft.Identity.SideBySide.csproj", "{D3033A40-F2C2-4495-BC9F-C3C6D497D1CC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Identity.Json", "json\Microsoft.Identity.Json.csproj", "{72E4A88D-EEA3-4083-B4B7-F8D95E9F5EAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,10 @@ Global
 		{D3033A40-F2C2-4495-BC9F-C3C6D497D1CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3033A40-F2C2-4495-BC9F-C3C6D497D1CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3033A40-F2C2-4495-BC9F-C3C6D497D1CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72E4A88D-EEA3-4083-B4B7-F8D95E9F5EAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72E4A88D-EEA3-4083-B4B7-F8D95E9F5EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72E4A88D-EEA3-4083-B4B7-F8D95E9F5EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72E4A88D-EEA3-4083-B4B7-F8D95E9F5EAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

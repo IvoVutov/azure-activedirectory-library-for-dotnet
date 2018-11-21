@@ -119,6 +119,10 @@ in ADAL and MSAL and to ease unit testing. No projects should take a dependency 
       <Version>27.0.2</Version>
     </PackageReference>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\json\Microsoft.Identity.Json.csproj" />
+  </ItemGroup>
 	  <Target Name="ProjectReferenceSolution" BeforeTargets="ResolveAssemblyReferences" DependsOnTargets="ResolveProjectReferences">
   </Target>
 </Project>
