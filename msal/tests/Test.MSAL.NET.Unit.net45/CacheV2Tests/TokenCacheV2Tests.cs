@@ -27,11 +27,11 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Identity.Core.CacheV2;
-using Microsoft.Identity.Core.CacheV2.Impl;
-using Microsoft.Identity.Core.CacheV2.Impl.InMemory;
-using Microsoft.Identity.Core.CacheV2.Impl.Utils;
-using Microsoft.Identity.Core.CacheV2.Schema;
+using Microsoft.Identity.Client.CacheV2;
+using Microsoft.Identity.Client.CacheV2.Impl;
+using Microsoft.Identity.Client.CacheV2.Impl.InMemory;
+using Microsoft.Identity.Client.CacheV2.Impl.Utils;
+using Microsoft.Identity.Client.CacheV2.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Test.MSAL.NET.Unit.net45.CacheV2Tests

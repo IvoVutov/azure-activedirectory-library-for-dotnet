@@ -25,57 +25,42 @@
 // 
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using Microsoft.Identity.Client.CacheV2.Impl;
+using Microsoft.Identity.Client.CacheV2.Schema;
 
-namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
+namespace Microsoft.Identity.Client.CacheV2.Impl
 {
-    internal class MockFileIO : ICachePathStorage
+    /// <summary>
+    /// This does most of the raw work of IStorageManager but without knowledge of cross cutting concerns
+    /// like telemetry.
+    /// </summary>
+    internal interface IStorageWorker
     {
-        public readonly Dictionary<string, byte[]> _fileSystem = new Dictionary<string, byte[]>();
+        IEnumerable<Credential> ReadCredentials(
+            string homeAccountId,
+            string environment,
+            string realm,
+            string clientId,
+            string familyId,
+            string target,
+            ISet<CredentialType> types);
 
-        public byte[] Read(string key)
-        {
-            if (_fileSystem.TryGetValue(key, out byte[] contents))
-            {
-                return contents;
-            }
-            else
-            {
-                return new byte[0];
-            }
-        }
+        void WriteCredentials(IEnumerable<Credential> credentials);
 
-        public void ReadModifyWrite(string key, Func<byte[], byte[]> modify)
-        {
-            _fileSystem.TryGetValue(key, out byte[] contents);
-            if (contents == null)
-            {
-                contents = new byte[0];
-            }
+        void DeleteCredentials(
+            string homeAccountId,
+            string environment,
+            string realm,
+            string clientId,
+            string familyId,
+            string target,
+            ISet<CredentialType> types);
 
-            _fileSystem[key] = modify(contents);
-        }
-
-        public void Write(string key, byte[] data)
-        {
-            _fileSystem[key] = data;
-        }
-
-        public void DeleteFile(string key)
-        {
-            _fileSystem.Remove(key);
-        }
-
-        public void DeleteContent(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<string> ListContent(string key)
-        {
-            throw new NotImplementedException();
-        }
+        Microsoft.Identity.Client.CacheV2.Schema.Account ReadAccount(string homeAccountId, string environment, string realm);
+        void WriteAccount(Microsoft.Identity.Client.CacheV2.Schema.Account account);
+        void DeleteAccount(string homeAccountId, string environment, string realm);
+        void DeleteAccounts(string homeAccountId, string environment);
+        AppMetadata ReadAppMetadata(string environment, string clientId);
+        void WriteAppMetadata(AppMetadata appMetadata);
     }
 }

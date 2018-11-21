@@ -30,7 +30,7 @@ using Microsoft.Identity.Core.Helpers;
 
 namespace Microsoft.Identity.Core.Cache
 {
-    internal class TokenCacheSerializeHelper
+    internal static class TokenCacheSerializeHelper
     {
         private const string AccessTokenKey = "access_tokens";
         private const string RefreshTokenKey = "refresh_tokens";

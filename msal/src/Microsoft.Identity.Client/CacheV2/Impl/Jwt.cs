@@ -25,27 +25,39 @@
 // 
 // ------------------------------------------------------------------------------
 
-using Microsoft.Identity.Client.CacheV2.Impl;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using Microsoft.Identity.Client.CacheV2.Impl.Utils;
+using Microsoft.Identity.Core.Helpers;
+using Microsoft.Identity.Json.Linq;
 
-namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
+namespace Microsoft.Identity.Client.CacheV2.Impl
 {
-    [TestClass]
-    public class FileSystemCredentialPathManagerTests
+    internal class Jwt
     {
-        private readonly FileSystemCredentialPathManager _credentialPathManager = new FileSystemCredentialPathManager();
-
-        [TestMethod]
-        public void ToSafeFilename()
+        public Jwt(string raw)
         {
-            Assert.AreEqual("98JPIEIUEFT7FFJK", _credentialPathManager.ToSafeFilename("!@#$%^&*()-+"));
-            Assert.AreEqual("SEOC8GKOVGE196NR", _credentialPathManager.ToSafeFilename(""));
-            Assert.AreEqual("82E183VGAG9CFOF4", _credentialPathManager.ToSafeFilename("=^^="));
-            Assert.AreEqual("EOE7CM5P6N5I6EAS", _credentialPathManager.ToSafeFilename("alreadySafeButStill"));
-            Assert.AreEqual("EOE7CM5P6N5I6EAS", _credentialPathManager.ToSafeFilename("AlReAdYsAfEbUtStIlL"));
-            Assert.AreEqual(
-                "EPGP81EH0BA8BLKC",
-                _credentialPathManager.ToSafeFilename("================================================"));
+            Raw = raw;
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                // warning: constructed jwt from empty string
+                return;
+            }
+
+            string[] sections = Raw.Split('.');
+            if (sections.Length != 3)
+            {
+                throw new ArgumentException("failed jwt decode: wrong number of sections", nameof(raw));
+            }
+
+            Payload = Base64UrlHelpers.DecodeToString(sections[1]);
+            Json = JObject.Parse(Payload);
+            IsSigned = !string.IsNullOrEmpty(sections[2]);
         }
+
+        protected JObject Json { get; }
+        public string Raw { get; }
+        public string Payload { get; }
+        public bool IsSigned { get; }
+        public bool IsEmpty => Json.IsEmpty();
     }
 }

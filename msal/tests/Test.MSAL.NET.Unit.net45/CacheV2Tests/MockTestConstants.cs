@@ -26,7 +26,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Globalization;
-using Microsoft.Identity.Core.CacheV2.Schema;
+using Microsoft.Identity.Client.CacheV2.Schema;
 using Microsoft.Identity.Core.Helpers;
 
 namespace Test.MSAL.NET.Unit.net45.CacheV2Tests

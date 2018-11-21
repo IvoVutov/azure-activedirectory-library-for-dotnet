@@ -25,27 +25,19 @@
 // 
 // ------------------------------------------------------------------------------
 
-using Microsoft.Identity.Client.CacheV2.Impl;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
+namespace Microsoft.Identity.Client.CacheV2.Schema
 {
-    [TestClass]
-    public class FileSystemCredentialPathManagerTests
+    internal class AppMetadata
     {
-        private readonly FileSystemCredentialPathManager _credentialPathManager = new FileSystemCredentialPathManager();
-
-        [TestMethod]
-        public void ToSafeFilename()
+        public AppMetadata(string environment, string clientId, string familyId)
         {
-            Assert.AreEqual("98JPIEIUEFT7FFJK", _credentialPathManager.ToSafeFilename("!@#$%^&*()-+"));
-            Assert.AreEqual("SEOC8GKOVGE196NR", _credentialPathManager.ToSafeFilename(""));
-            Assert.AreEqual("82E183VGAG9CFOF4", _credentialPathManager.ToSafeFilename("=^^="));
-            Assert.AreEqual("EOE7CM5P6N5I6EAS", _credentialPathManager.ToSafeFilename("alreadySafeButStill"));
-            Assert.AreEqual("EOE7CM5P6N5I6EAS", _credentialPathManager.ToSafeFilename("AlReAdYsAfEbUtStIlL"));
-            Assert.AreEqual(
-                "EPGP81EH0BA8BLKC",
-                _credentialPathManager.ToSafeFilename("================================================"));
+            Environment = environment;
+            ClientId = clientId;
+            FamilyId = familyId;
         }
+
+        public string Environment { get; }
+        public string ClientId { get; }
+        public string FamilyId { get; }
     }
 }

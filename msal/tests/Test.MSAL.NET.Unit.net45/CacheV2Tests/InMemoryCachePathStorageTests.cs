@@ -32,7 +32,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Identity.Core.CacheV2.Impl.InMemory;
+using Microsoft.Identity.Client.CacheV2.Impl.InMemory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Test.MSAL.NET.Common.Core.Helpers;
 

@@ -25,27 +25,43 @@
 // 
 // ------------------------------------------------------------------------------
 
-using Microsoft.Identity.Client.CacheV2.Impl;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Identity.Json.Linq;
 
-namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
+namespace Microsoft.Identity.Client.CacheV2.Impl.Utils
 {
-    [TestClass]
-    public class FileSystemCredentialPathManagerTests
+    internal static class JsonUtils
     {
-        private readonly FileSystemCredentialPathManager _credentialPathManager = new FileSystemCredentialPathManager();
-
-        [TestMethod]
-        public void ToSafeFilename()
+        public static string GetExistingOrEmptyString(JObject json, string key)
         {
-            Assert.AreEqual("98JPIEIUEFT7FFJK", _credentialPathManager.ToSafeFilename("!@#$%^&*()-+"));
-            Assert.AreEqual("SEOC8GKOVGE196NR", _credentialPathManager.ToSafeFilename(""));
-            Assert.AreEqual("82E183VGAG9CFOF4", _credentialPathManager.ToSafeFilename("=^^="));
-            Assert.AreEqual("EOE7CM5P6N5I6EAS", _credentialPathManager.ToSafeFilename("alreadySafeButStill"));
-            Assert.AreEqual("EOE7CM5P6N5I6EAS", _credentialPathManager.ToSafeFilename("AlReAdYsAfEbUtStIlL"));
-            Assert.AreEqual(
-                "EPGP81EH0BA8BLKC",
-                _credentialPathManager.ToSafeFilename("================================================"));
+            if (json.TryGetValue(key, out var val))
+            {
+                return val.ToObject<string>();
+            }
+
+            return string.Empty;
+        }
+
+        public static string ExtractExistingOrEmptyString(JObject json, string key)
+        {
+            if (json.TryGetValue(key, out var val))
+            {
+                string strVal = val.ToObject<string>();
+                json.Remove(key);
+                return strVal;
+            }
+
+            return string.Empty;
+        }
+
+        public static long ExtractParsedIntOrZero(JObject json, string key)
+        {
+            string strVal = ExtractExistingOrEmptyString(json, key);
+            if (!string.IsNullOrWhiteSpace(strVal) && long.TryParse(strVal, out long result))
+            {
+                return result;
+            }
+
+            return 0;
         }
     }
 }

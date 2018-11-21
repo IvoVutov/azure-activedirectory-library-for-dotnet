@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\adal\src\Microsoft.IdentityModel.Clients.ActiveDirectory\Microsoft.IdentityModel.Clients.ActiveDirectory.csproj" />
+    <ProjectReference Include="..\..\..\json\Microsoft.Identity.Json.csproj" />
   </ItemGroup>
 
   <ItemGroup>
