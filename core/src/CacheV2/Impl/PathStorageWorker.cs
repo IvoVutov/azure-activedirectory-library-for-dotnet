@@ -296,7 +296,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
 
         internal HashSet<string> SplitAndNormalizeScopes(string target)
         {
-            var scopes = new HashSet<string>(target.Split(' '));
+            var scopes = ScopeUtils.SplitScopes(target);
             var normalizedScopes = new HashSet<string>();
             foreach (string scope in scopes)
             {

@@ -38,10 +38,6 @@ namespace Microsoft.Identity.Core.CacheV2.Impl.InMemory
         private readonly object _lock = new object();
         internal FsDirectory RootDirectory { get; } = new FsDirectory();
 
-        public InMemoryCachePathStorage()
-        {
-        }
-
         public byte[] Read(string key)
         {
             lock (_lock)
@@ -197,7 +193,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl.InMemory
 
             private static string[] SplitPath(string relativePath)
             {
-                return relativePath.Split(
+                return PathUtils.Normalize(relativePath).Split(
                     new[]
                     {
                         '/'
