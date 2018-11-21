@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Identity.Core.CacheV2.Impl.Utils;
 using Microsoft.Identity.Core.CacheV2.Schema;
 using Microsoft.Identity.Json;
 using Microsoft.Identity.Json.Linq;
@@ -325,7 +326,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
         private void ReadCredential(string relativePath, List<Credential> credentials)
         {
             var json = Read(relativePath);
-            if (json != null)
+            if (json != null && !json.IsEmpty())
             {
                 credentials.Add(StorageJsonUtils.CredentialFromJson(json));
             }

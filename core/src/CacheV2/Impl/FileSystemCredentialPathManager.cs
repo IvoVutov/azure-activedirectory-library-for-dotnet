@@ -106,15 +106,16 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
             }
 
             path = Path.Combine(path, ClientIdPrefix + ToSafeFilename(clientId) + FileExtension);
-            return path;
+            return PathUtils.Normalize(path);
         }
 
         public string GetAppMetadataPath(string environment, string clientId)
         {
-            return Path.Combine(
+            string path = Path.Combine(
                 AppMetadataFolder,
                 EnvironmentPrefix + ToSafeFilename(environment),
                 ClientIdPrefix + ToSafeFilename(clientId) + FileExtension);
+            return PathUtils.Normalize(path);
         }
 
         public string GetAccountPath(Account account)
@@ -124,10 +125,11 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
 
         public string GetAccountPath(string homeAccountId, string environment, string realm)
         {
-            return Path.Combine(
+            string path = Path.Combine(
                 GetCommonPathPrefix(homeAccountId, environment),
                 AccountsFolder,
                 RealmPrefix + ToSafeFilename(realm) + FileExtension);
+            return PathUtils.Normalize(path);
         }
 
         public string GetAppMetadataPath(AppMetadata appMetadata)
@@ -143,7 +145,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
                 path = Path.Combine(EnvironmentPrefix + ToSafeFilename(environment));
             }
 
-            return path;
+            return PathUtils.Normalize(path);
         }
 
         private string NormalizeKey(string data)
@@ -153,10 +155,11 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
 
         private string GetCommonPathPrefix(string homeAccountId, string environment)
         {
-            return Path.Combine(
+            string path = Path.Combine(
                 UserDataFolder,
                 UserPrefix + ToSafeFilename(homeAccountId),
                 EnvironmentPrefix + ToSafeFilename(environment));
+            return PathUtils.Normalize(path);
         }
     }
 }
