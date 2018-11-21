@@ -28,6 +28,8 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using Microsoft.Identity.Core.CacheV2.Impl;
+using Microsoft.Identity.Core.CacheV2.Impl.Utils;
 
 namespace Microsoft.Identity.Core.Platforms.net45.CacheV2
 {
@@ -64,7 +66,7 @@ namespace Microsoft.Identity.Core.Platforms.net45.CacheV2
 
         public static string MakeMutexName(string relativePath)
         {
-            return MutexNamePrefix + relativePath.Replace('\\', '/');
+            return MutexNamePrefix + PathUtils.Normalize(relativePath);
         }
 
         public bool TryLock(int millisecondsTimeout = MutexTimeoutSeconds * 1000)

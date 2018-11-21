@@ -30,6 +30,10 @@ using Microsoft.Identity.Core.CacheV2.Schema;
 
 namespace Microsoft.Identity.Core.CacheV2.Impl
 {
+    /// <summary>
+    /// This does most of the raw work of IStorageManager but without knowledge of cross cutting concerns
+    /// like telemetry.
+    /// </summary>
     internal interface IStorageWorker
     {
         IEnumerable<Credential> ReadCredentials(

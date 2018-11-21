@@ -28,6 +28,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Identity.Core.CacheV2.Impl;
+using Microsoft.Identity.Core.CacheV2.Impl.Utils;
 using Microsoft.Identity.Core.CacheV2.Schema;
 using Microsoft.Identity.Json.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -49,20 +50,6 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
         {
             _mockFileIO = new MockFileIO();
             _storageWorker = new PathStorageWorker(_mockFileIO, _credentialPathManager);
-        }
-
-        [TestMethod]
-        public void ToSafeFilename()
-        {
-            // TODO: Move this test to CredentialPathManager tests...
-            Assert.AreEqual("98JPIEIUEFT7FFJK", _credentialPathManager.ToSafeFilename("!@#$%^&*()-+"));
-            Assert.AreEqual("SEOC8GKOVGE196NR", _credentialPathManager.ToSafeFilename(""));
-            Assert.AreEqual("82E183VGAG9CFOF4", _credentialPathManager.ToSafeFilename("=^^="));
-            Assert.AreEqual("EOE7CM5P6N5I6EAS", _credentialPathManager.ToSafeFilename("alreadySafeButStill"));
-            Assert.AreEqual("EOE7CM5P6N5I6EAS", _credentialPathManager.ToSafeFilename("AlReAdYsAfEbUtStIlL"));
-            Assert.AreEqual(
-                "EPGP81EH0BA8BLKC",
-                _credentialPathManager.ToSafeFilename("================================================"));
         }
 
         [TestMethod]
@@ -159,7 +146,7 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
             path = Path.Combine(path, "Accounts");
             path = Path.Combine(path, "r_" + _credentialPathManager.ToSafeFilename(MockTestConstants.Realm) + ".bin");
 
-            Assert.AreEqual<string>(path, _credentialPathManager.GetAccountPath(MockTestConstants.GetAccount()));
+            Assert.AreEqual(path, _credentialPathManager.GetAccountPath(MockTestConstants.GetAccount()));
         }
 
         [TestMethod]
@@ -169,7 +156,7 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
             path = Path.Combine(path, "e_" + _credentialPathManager.ToSafeFilename(MockTestConstants.Environment));
             path = Path.Combine(path, "c_" + _credentialPathManager.ToSafeFilename(MockTestConstants.ClientId) + ".bin");
 
-            Assert.AreEqual<string>(path, _credentialPathManager.GetAppMetadataPath(MockTestConstants.GetAppMetadata()));
+            Assert.AreEqual(path, _credentialPathManager.GetAppMetadataPath(MockTestConstants.GetAppMetadata()));
         }
 
         // Tests StorageWorker::Read on a non-existing file

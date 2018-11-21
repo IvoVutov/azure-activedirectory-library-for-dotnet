@@ -25,32 +25,27 @@
 // 
 // ------------------------------------------------------------------------------
 
-using Microsoft.Identity.Core.CacheV2.Schema;
+using Microsoft.Identity.Core.CacheV2.Impl;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Identity.Core.CacheV2.Impl
+namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
 {
-    /// <summary>
-    /// Interface providing mechanism to transform the unified schema types into their appropriate "path"
-    /// or "key" for storage/retrieval.  For example, on Windows, this will be a relative file system path.
-    /// But on iOS/macOS is will be a path to keychain storage.
-    /// </summary>
-    internal interface ICredentialPathManager
+    [TestClass]
+    public class FileSystemCredentialPathManagerTests
     {
-        string GetCredentialPath(Credential credential);
-        string ToSafeFilename(string data);
+        private readonly FileSystemCredentialPathManager _credentialPathManager = new FileSystemCredentialPathManager();
 
-        string GetCredentialPath(
-            string homeAccountId,
-            string environment,
-            string realm,
-            string clientId,
-            string familyId,
-            CredentialType credentialType);
-
-        string GetAppMetadataPath(string environment, string clientId);
-        string GetAccountPath(Account account);
-        string GetAccountPath(string homeAccountId, string environment, string realm);
-        string GetAppMetadataPath(AppMetadata appMetadata);
-        string GetAccountsPath(string homeAccountId, string environment);
+        [TestMethod]
+        public void ToSafeFilename()
+        {
+            Assert.AreEqual("98JPIEIUEFT7FFJK", _credentialPathManager.ToSafeFilename("!@#$%^&*()-+"));
+            Assert.AreEqual("SEOC8GKOVGE196NR", _credentialPathManager.ToSafeFilename(""));
+            Assert.AreEqual("82E183VGAG9CFOF4", _credentialPathManager.ToSafeFilename("=^^="));
+            Assert.AreEqual("EOE7CM5P6N5I6EAS", _credentialPathManager.ToSafeFilename("alreadySafeButStill"));
+            Assert.AreEqual("EOE7CM5P6N5I6EAS", _credentialPathManager.ToSafeFilename("AlReAdYsAfEbUtStIlL"));
+            Assert.AreEqual(
+                "EPGP81EH0BA8BLKC",
+                _credentialPathManager.ToSafeFilename("================================================"));
+        }
     }
 }

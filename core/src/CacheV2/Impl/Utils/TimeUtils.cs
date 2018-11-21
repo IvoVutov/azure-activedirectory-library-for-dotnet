@@ -25,32 +25,16 @@
 // 
 // ------------------------------------------------------------------------------
 
-using Microsoft.Identity.Core.CacheV2.Schema;
+using System;
 
-namespace Microsoft.Identity.Core.CacheV2.Impl
+namespace Microsoft.Identity.Core.CacheV2.Impl.Utils
 {
-    /// <summary>
-    /// Interface providing mechanism to transform the unified schema types into their appropriate "path"
-    /// or "key" for storage/retrieval.  For example, on Windows, this will be a relative file system path.
-    /// But on iOS/macOS is will be a path to keychain storage.
-    /// </summary>
-    internal interface ICredentialPathManager
+    internal static class TimeUtils
     {
-        string GetCredentialPath(Credential credential);
-        string ToSafeFilename(string data);
-
-        string GetCredentialPath(
-            string homeAccountId,
-            string environment,
-            string realm,
-            string clientId,
-            string familyId,
-            CredentialType credentialType);
-
-        string GetAppMetadataPath(string environment, string clientId);
-        string GetAccountPath(Account account);
-        string GetAccountPath(string homeAccountId, string environment, string realm);
-        string GetAppMetadataPath(AppMetadata appMetadata);
-        string GetAccountsPath(string homeAccountId, string environment);
+        public static long GetSecondsFromEpochNow()
+        {
+            var t = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            return Convert.ToInt64(t.TotalSeconds);
+        }
     }
 }

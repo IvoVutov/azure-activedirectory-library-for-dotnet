@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Identity.Core.CacheV2.Impl.Utils;
 
 namespace Microsoft.Identity.Core.CacheV2.Impl.InMemory
 {
@@ -179,7 +180,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl.InMemory
 
             public void CreateFile(string relativePath, byte[] contents)
             {
-                var fsDir = CreateDirectory(Path.GetDirectoryName(relativePath).Replace('\\', '/'));
+                var fsDir = CreateDirectory(PathUtils.Normalize(Path.GetDirectoryName(relativePath)));
                 string fileName = Path.GetFileName(relativePath);
                 if (string.IsNullOrWhiteSpace(fileName))
                 {

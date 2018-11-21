@@ -293,8 +293,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
             return null;
         }
 
-        // public for tests...
-        public HashSet<string> SplitAndNormalizeScopes(string target)
+        internal HashSet<string> SplitAndNormalizeScopes(string target)
         {
             var scopes = new HashSet<string>(target.Split(' '));
             var normalizedScopes = new HashSet<string>();
@@ -366,8 +365,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
             return data.ToLowerInvariant().Trim();
         }
 
-        // public for tests
-        public string GetCredentialPath(Credential credential)
+        internal string GetCredentialPath(Credential credential)
         {
             return _credentialPathManager.GetCredentialPath(
                 credential.HomeAccountId,

@@ -28,6 +28,7 @@
 using System;
 using Microsoft.Identity.Core.CacheV2;
 using Microsoft.Identity.Core.CacheV2.Impl;
+using Microsoft.Identity.Core.CacheV2.Impl.Utils;
 using Microsoft.Identity.Core.CacheV2.Schema;
 using Microsoft.Identity.Core.Helpers;
 using Microsoft.Identity.Json.Linq;

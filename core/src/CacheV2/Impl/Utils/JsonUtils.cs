@@ -25,32 +25,43 @@
 // 
 // ------------------------------------------------------------------------------
 
-using Microsoft.Identity.Core.CacheV2.Schema;
+using Microsoft.Identity.Json.Linq;
 
-namespace Microsoft.Identity.Core.CacheV2.Impl
+namespace Microsoft.Identity.Core.CacheV2.Impl.Utils
 {
-    /// <summary>
-    /// Interface providing mechanism to transform the unified schema types into their appropriate "path"
-    /// or "key" for storage/retrieval.  For example, on Windows, this will be a relative file system path.
-    /// But on iOS/macOS is will be a path to keychain storage.
-    /// </summary>
-    internal interface ICredentialPathManager
+    internal static class JsonUtils
     {
-        string GetCredentialPath(Credential credential);
-        string ToSafeFilename(string data);
+        public static string GetExistingOrEmptyString(JObject json, string key)
+        {
+            if (json.TryGetValue(key, out var val))
+            {
+                return val.ToObject<string>();
+            }
 
-        string GetCredentialPath(
-            string homeAccountId,
-            string environment,
-            string realm,
-            string clientId,
-            string familyId,
-            CredentialType credentialType);
+            return string.Empty;
+        }
 
-        string GetAppMetadataPath(string environment, string clientId);
-        string GetAccountPath(Account account);
-        string GetAccountPath(string homeAccountId, string environment, string realm);
-        string GetAppMetadataPath(AppMetadata appMetadata);
-        string GetAccountsPath(string homeAccountId, string environment);
+        public static string ExtractExistingOrEmptyString(JObject json, string key)
+        {
+            if (json.TryGetValue(key, out var val))
+            {
+                string strVal = val.ToObject<string>();
+                json.Remove(key);
+                return strVal;
+            }
+
+            return string.Empty;
+        }
+
+        public static long ExtractParsedIntOrZero(JObject json, string key)
+        {
+            string strVal = ExtractExistingOrEmptyString(json, key);
+            if (!string.IsNullOrWhiteSpace(strVal) && long.TryParse(strVal, out long result))
+            {
+                return result;
+            }
+
+            return 0;
+        }
     }
 }

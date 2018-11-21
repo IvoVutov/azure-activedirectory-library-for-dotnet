@@ -26,32 +26,43 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using Microsoft.Identity.Core.Cache;
+using Microsoft.Identity.Core.CacheV2.Schema;
 
 namespace Microsoft.Identity.Core.CacheV2.Impl
 {
-    internal static class UriExtensions
+    internal class AdalLegacyCacheManager : IAdalLegacyCacheManager
     {
-        public static string GetEnvironment(this Uri uri)
+        public AdalLegacyCacheManager(ILegacyCachePersistence legacyCachePersistence)
         {
-            return uri.Host;
+            LegacyCachePersistence = legacyCachePersistence;
         }
 
-        public static string GetRealm(this Uri uri)
+        public ILegacyCachePersistence LegacyCachePersistence { get; }
+
+        /// <inheritdoc />
+        public void WriteAdalRefreshToken()
         {
-            string path = uri.GetPath();
-            string[] parts = path.Split(
-                new[]
-                {
-                    '/'
-                },
-                StringSplitOptions.RemoveEmptyEntries);
-            return parts[0];
-            // return uri.GetPath().Split('/')[0]; // todo: verify this
+            throw new NotImplementedException();
         }
 
-        public static string GetPath(this Uri uri)
+        /// <inheritdoc />
+        public Credential GetAdalRefreshToken()
         {
-            return uri.AbsolutePath; // todo: verify this
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<Account> GetAllAdalUsers()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public void RemoveAdalUser()
+        {
+            throw new NotImplementedException();
         }
     }
 }

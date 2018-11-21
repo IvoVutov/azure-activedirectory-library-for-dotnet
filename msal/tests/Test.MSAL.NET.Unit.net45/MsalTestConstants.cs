@@ -45,6 +45,8 @@ namespace Test.MSAL.NET.Unit
         public const string Uid = "my-uid";
         public const string Utid = "my-utid";
 
+        public const string HomeAccountId = Uid + "." + Utid;
+
         public const string ProductionPrefNetworkEnvironment = "login.microsoftonline.com";
         public const string ProductionPrefCacheEnvironment = "login.windows.net";
         public const string ProductionNotPrefEnvironmentAlias = "sts.windows.net";

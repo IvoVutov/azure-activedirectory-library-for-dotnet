@@ -25,15 +25,20 @@
 // 
 // ------------------------------------------------------------------------------
 
-using Microsoft.Identity.Json.Linq;
+using System.Collections.Generic;
 
-namespace Microsoft.Identity.Core.CacheV2.Impl
+namespace Microsoft.Identity.Core.CacheV2.Impl.Utils
 {
-    internal static class JObjectExtensions
+    internal static class ScopeUtils
     {
-        public static bool IsEmpty(this JObject json)
+        public static HashSet<string> SplitScopes(string kvpKey)
         {
-            return !json.HasValues;
+            return new HashSet<string>(kvpKey.Split(' '));
+        }
+
+        public static string JoinScopes(ISet<string> scopes)
+        {
+            return string.Join(" ", scopes);
         }
     }
 }

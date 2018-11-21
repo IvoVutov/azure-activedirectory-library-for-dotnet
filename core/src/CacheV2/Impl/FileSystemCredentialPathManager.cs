@@ -27,8 +27,8 @@
 
 using System;
 using System.IO;
-using System.Text;
 using Microsoft.Identity.Core.CacheV2.Schema;
+using Microsoft.Identity.Core.CacheV2.Impl.Utils;
 
 namespace Microsoft.Identity.Core.CacheV2.Impl
 {
@@ -62,7 +62,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
         public string ToSafeFilename(string data)
         {
             string normalizedData = NormalizeKey(data);
-            byte[] hash = CreateHash(normalizedData);
+            byte[] hash = PlatformProxyFactory.GetPlatformProxy().CryptographyManager.CreateSha256HashBytes(normalizedData);
             var sizedHash = new byte[10];
             Array.Copy(hash, sizedHash, 10);
             return Base32Hex.ToBase32String(sizedHash);
@@ -149,12 +149,6 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
         private string NormalizeKey(string data)
         {
             return data.ToLowerInvariant().Trim();
-        }
-
-        private byte[] CreateHash(string input)
-        {
-            var crypto = PlatformProxyFactory.GetPlatformProxy().CryptographyManager;
-            return crypto.CreateSha256HashBytes(input);
         }
 
         private string GetCommonPathPrefix(string homeAccountId, string environment)

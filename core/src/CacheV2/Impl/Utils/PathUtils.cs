@@ -25,16 +25,13 @@
 // 
 // ------------------------------------------------------------------------------
 
-using System;
-
-namespace Microsoft.Identity.Core.CacheV2.Impl
+namespace Microsoft.Identity.Core.CacheV2.Impl.Utils
 {
-    internal static class TimeUtils
+    internal static class PathUtils
     {
-        public static long GetSecondsFromEpochNow()
+        public static string Normalize(string inputPath)
         {
-            var t = DateTime.UtcNow - new DateTime(1970, 1, 1);
-            return Convert.ToInt64(t.TotalSeconds);
+            return inputPath.Replace('\\', '/');
         }
     }
 }

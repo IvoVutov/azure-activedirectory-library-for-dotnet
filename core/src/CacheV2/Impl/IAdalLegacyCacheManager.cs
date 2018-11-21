@@ -26,12 +26,19 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Identity.Core.Cache;
 using Microsoft.Identity.Core.CacheV2.Schema;
 
 namespace Microsoft.Identity.Core.CacheV2.Impl
 {
+    /// <summary>
+    /// Interface to handle transforming unified schema types to/from the ADAL Legacy cache format
+    /// and storing/retrieving them to/from the adal cache persistence.
+    /// </summary>
     internal interface IAdalLegacyCacheManager
     {
+        ILegacyCachePersistence LegacyCachePersistence { get; }
+
         void WriteAdalRefreshToken();
         Credential GetAdalRefreshToken();
         IEnumerable<Account> GetAllAdalUsers();

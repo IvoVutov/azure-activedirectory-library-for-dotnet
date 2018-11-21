@@ -28,6 +28,7 @@
 using System;
 using System.Globalization;
 using Microsoft.Identity.Core.CacheV2.Impl;
+using Microsoft.Identity.Core.CacheV2.Impl.Utils;
 using Microsoft.Identity.Json.Linq;
 
 namespace Microsoft.Identity.Core.CacheV2.Schema

@@ -25,20 +25,33 @@
 // 
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
+using System;
 
-namespace Microsoft.Identity.Core.CacheV2.Impl
+namespace Microsoft.Identity.Core.CacheV2.Impl.Utils
 {
-    internal static class ScopeUtils
+    internal static class UriExtensions
     {
-        public static HashSet<string> SplitScopes(string kvpKey)
+        public static string GetEnvironment(this Uri uri)
         {
-            return new HashSet<string>(kvpKey.Split(' '));
+            return uri.Host;
         }
 
-        public static string JoinScopes(ISet<string> scopes)
+        public static string GetRealm(this Uri uri)
         {
-            return string.Join(" ", scopes);
+            string path = uri.GetPath();
+            string[] parts = path.Split(
+                new[]
+                {
+                    '/'
+                },
+                StringSplitOptions.RemoveEmptyEntries);
+            return parts[0];
+            // return uri.GetPath().Split('/')[0]; // todo: verify this
+        }
+
+        public static string GetPath(this Uri uri)
+        {
+            return uri.AbsolutePath; // todo: verify this
         }
     }
 }

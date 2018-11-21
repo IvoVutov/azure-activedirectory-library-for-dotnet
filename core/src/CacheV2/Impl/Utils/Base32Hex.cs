@@ -29,7 +29,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-namespace Microsoft.Identity.Core.CacheV2.Impl
+namespace Microsoft.Identity.Core.CacheV2.Impl.Utils
 {
     internal static class Base32Hex
     {

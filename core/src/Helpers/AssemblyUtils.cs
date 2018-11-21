@@ -31,17 +31,19 @@ namespace Microsoft.Identity.Core.Helpers
 {
     internal static class AssemblyUtils
     {
+        private static Assembly GetAssembly()
+        {
+            return typeof(AssemblyUtils).GetTypeInfo().Assembly;
+        }
+
         public static string GetAssemblyFileVersionAttribute()
         {
-            // TODO:  Pick one of these and let's finalize...
-            // return typeof (MsalIdHelper).GetTypeInfo().Assembly.GetName().Version.ToString();
-            return typeof(AssemblyUtils).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+            return GetAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
         }
 
         public static string GetAssemblyInformationalVersion()
         {
-            var attribute = typeof(AssemblyUtils).GetTypeInfo().Assembly
-                                                 .GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            var attribute = GetAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             return attribute != null ? attribute.InformationalVersion : string.Empty;
         }
     }

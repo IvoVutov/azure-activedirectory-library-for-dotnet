@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using Microsoft.Identity.Core.CacheV2.Impl.Utils;
 
 namespace Microsoft.Identity.Core.Platforms.net45.CacheV2
 {
@@ -106,7 +107,6 @@ namespace Microsoft.Identity.Core.Platforms.net45.CacheV2
             using (LockFile(key))
             {
                 string fullPath = GetFullPath(key);
-
                 var result = new List<string>();
 
                 if (Directory.Exists(fullPath))
@@ -114,7 +114,7 @@ namespace Microsoft.Identity.Core.Platforms.net45.CacheV2
                     foreach (string item in Directory.EnumerateFileSystemEntries(fullPath))
                     {
                         string newItem = item.Substring(BasePath.Length);
-                        newItem = newItem.Replace('\\', '/');
+                        newItem = PathUtils.Normalize(newItem);
                         while (newItem.StartsWith("/", StringComparison.OrdinalIgnoreCase))
                         {
                             newItem = newItem.Substring(1);
@@ -212,7 +212,7 @@ namespace Microsoft.Identity.Core.Platforms.net45.CacheV2
                 throw new ArgumentException("file cannot be absolute", nameof(relativePath));
             }
 
-            return Path.Combine(BasePath, relativePath).Replace('\\', '/');
+            return PathUtils.Normalize(Path.Combine(BasePath, relativePath));
         }
 
         private void Remove(string relativePath)
