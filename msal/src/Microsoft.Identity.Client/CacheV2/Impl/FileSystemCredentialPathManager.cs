@@ -83,7 +83,7 @@ namespace Microsoft.Identity.Client.CacheV2.Impl
             if (credentialType == CredentialType.OAuth2RefreshToken && !string.IsNullOrEmpty(familyId))
             {
                 path = Path.Combine(path, FamilyRefreshTokensFolder, FamilyIdPrefix + ToSafeFilename(familyId) + FileExtension);
-                return path;
+                return PathUtils.Normalize(path);
             }
 
             switch (credentialType)
