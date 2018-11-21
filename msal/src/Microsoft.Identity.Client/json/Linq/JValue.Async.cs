@@ -37,7 +37,7 @@ using Microsoft.Identity.Json.Utilities;
 namespace Microsoft.Identity.Json.Linq
 {
 #pragma warning disable CA1036 // Should define operators since implements IComparable
-    public partial class JValue
+    internal partial class JValue
 #pragma warning restore CA1036 // Should define operators since implements IComparable
     {
         /// <summary>

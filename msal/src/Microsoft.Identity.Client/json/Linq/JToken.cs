@@ -50,7 +50,7 @@ namespace Microsoft.Identity.Json.Linq
     /// <summary>
     /// Represents an abstract JSON token.
     /// </summary>
-    public abstract partial class JToken : IJEnumerable<JToken>, IJsonLineInfo
+    internal abstract partial class JToken : IJEnumerable<JToken>, IJsonLineInfo
 #if HAVE_ICLONEABLE
         , ICloneable
 #endif
@@ -178,7 +178,7 @@ namespace Microsoft.Identity.Json.Linq
         }
 
         /// <summary>
-        /// Gets the path of the JSON token. 
+        /// Gets the path of the JSON token.
         /// </summary>
         public string Path
         {
@@ -778,7 +778,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static explicit operator ushort(JToken value)
         {
             JValue v = EnsureValue(value);
@@ -802,7 +802,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static explicit operator char(JToken value)
         {
             JValue v = EnsureValue(value);
@@ -849,7 +849,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static explicit operator sbyte(JToken value)
         {
             JValue v = EnsureValue(value);
@@ -929,7 +929,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static explicit operator ushort?(JToken value)
         {
             if (value == null)
@@ -986,7 +986,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static explicit operator sbyte?(JToken value)
         {
             if (value == null)
@@ -1117,7 +1117,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static explicit operator uint?(JToken value)
         {
             if (value == null)
@@ -1146,7 +1146,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static explicit operator ulong?(JToken value)
         {
             if (value == null)
@@ -1259,7 +1259,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static explicit operator uint(JToken value)
         {
             JValue v = EnsureValue(value);
@@ -1283,7 +1283,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static explicit operator ulong(JToken value)
         {
             JValue v = EnsureValue(value);
@@ -1537,7 +1537,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
         /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static implicit operator JToken(sbyte value)
         {
             return new JValue(value);
@@ -1548,7 +1548,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
         /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static implicit operator JToken(sbyte? value)
         {
             return new JValue(value);
@@ -1621,7 +1621,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
         /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static implicit operator JToken(short value)
         {
             return new JValue(value);
@@ -1632,7 +1632,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
         /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static implicit operator JToken(ushort value)
         {
             return new JValue(value);
@@ -1703,7 +1703,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
         /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static implicit operator JToken(short? value)
         {
             return new JValue(value);
@@ -1714,7 +1714,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
         /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static implicit operator JToken(ushort? value)
         {
             return new JValue(value);
@@ -1725,7 +1725,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
         /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static implicit operator JToken(uint? value)
         {
             return new JValue(value);
@@ -1736,7 +1736,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
         /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static implicit operator JToken(ulong? value)
         {
             return new JValue(value);
@@ -1777,7 +1777,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
         /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static implicit operator JToken(uint value)
         {
             return new JValue(value);
@@ -1788,7 +1788,7 @@ namespace Microsoft.Identity.Json.Linq
         /// </summary>
         /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
         /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public static implicit operator JToken(ulong value)
         {
             return new JValue(value);

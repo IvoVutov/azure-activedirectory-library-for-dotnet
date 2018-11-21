@@ -39,7 +39,7 @@ namespace Microsoft.Identity.Json
     /// <summary>
     /// Represents a writer that provides a fast, non-cached, forward-only way of generating JSON data.
     /// </summary>
-    public partial class JsonTextWriter : JsonWriter
+    internal partial class JsonTextWriter : JsonWriter
     {
         private const int IndentCharBufferSize = 12;
         private readonly TextWriter _writer;
@@ -469,7 +469,7 @@ namespace Microsoft.Identity.Json
         /// Writes a <see cref="UInt32"/> value.
         /// </summary>
         /// <param name="value">The <see cref="UInt32"/> value to write.</param>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public override void WriteValue(uint value)
         {
             InternalWriteValue(JsonToken.Integer);
@@ -490,7 +490,7 @@ namespace Microsoft.Identity.Json
         /// Writes a <see cref="UInt64"/> value.
         /// </summary>
         /// <param name="value">The <see cref="UInt64"/> value to write.</param>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public override void WriteValue(ulong value)
         {
             InternalWriteValue(JsonToken.Integer);
@@ -575,7 +575,7 @@ namespace Microsoft.Identity.Json
         /// Writes a <see cref="UInt16"/> value.
         /// </summary>
         /// <param name="value">The <see cref="UInt16"/> value to write.</param>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public override void WriteValue(ushort value)
         {
             InternalWriteValue(JsonToken.Integer);
@@ -606,7 +606,7 @@ namespace Microsoft.Identity.Json
         /// Writes a <see cref="SByte"/> value.
         /// </summary>
         /// <param name="value">The <see cref="SByte"/> value to write.</param>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public override void WriteValue(sbyte value)
         {
             InternalWriteValue(JsonToken.Integer);
@@ -774,7 +774,7 @@ namespace Microsoft.Identity.Json
         #endregion
 
         /// <summary>
-        /// Writes a comment <c>/*...*/</c> containing the specified text. 
+        /// Writes a comment <c>/*...*/</c> containing the specified text.
         /// </summary>
         /// <param name="text">Text to place inside the comment.</param>
         public override void WriteComment(string text)

@@ -31,7 +31,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
 {
-    public static class JObjectAssert
+    internal static class JObjectAssert
     {
         public static void AreEqual(JObject expected, JObject actual)
         {

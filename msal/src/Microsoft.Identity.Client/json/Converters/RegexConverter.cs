@@ -36,7 +36,7 @@ namespace Microsoft.Identity.Json.Converters
     /// <summary>
     /// Converts a <see cref="Regex"/> to and from JSON and BSON.
     /// </summary>
-    public class RegexConverter : JsonConverter
+    internal class RegexConverter : JsonConverter
     {
         private const string PatternName = "Pattern";
         private const string OptionsName = "Options";
@@ -78,10 +78,10 @@ namespace Microsoft.Identity.Json.Converters
         private void WriteBson(BsonWriter writer, Regex regex)
         {
             // Regular expression - The first cstring is the regex pattern, the second
-            // is the regex options string. Options are identified by characters, which 
-            // must be stored in alphabetical order. Valid options are 'i' for case 
-            // insensitive matching, 'm' for multiline matching, 'x' for verbose mode, 
-            // 'l' to make \w, \W, etc. locale dependent, 's' for dotall mode 
+            // is the regex options string. Options are identified by characters, which
+            // must be stored in alphabetical order. Valid options are 'i' for case
+            // insensitive matching, 'm' for multiline matching, 'x' for verbose mode,
+            // 'l' to make \w, \W, etc. locale dependent, 's' for dotall mode
             // ('.' matches everything), and 'u' to make \w, \W, etc. match unicode.
 
             string options = null;

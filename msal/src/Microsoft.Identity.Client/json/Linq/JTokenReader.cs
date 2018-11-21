@@ -31,7 +31,7 @@ namespace Microsoft.Identity.Json.Linq
     /// <summary>
     /// Represents a reader that provides fast, non-cached, forward-only access to serialized JSON data.
     /// </summary>
-    public class JTokenReader : JsonReader, IJsonLineInfo
+    internal class JTokenReader : JsonReader, IJsonLineInfo
     {
         private readonly JToken _root;
         private string _initialPath;
@@ -298,7 +298,7 @@ namespace Microsoft.Identity.Json.Linq
         }
 
         /// <summary>
-        /// Gets the path of the current JSON token. 
+        /// Gets the path of the current JSON token.
         /// </summary>
         public override string Path
         {

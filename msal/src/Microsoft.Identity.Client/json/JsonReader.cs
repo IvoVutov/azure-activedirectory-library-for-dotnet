@@ -38,7 +38,7 @@ namespace Microsoft.Identity.Json
     /// <summary>
     /// Represents a reader that provides fast, non-cached, forward-only access to serialized JSON data.
     /// </summary>
-    public abstract partial class JsonReader : IDisposable
+    internal abstract partial class JsonReader : IDisposable
     {
         /// <summary>
         /// Specifies the state of the reader.
@@ -243,7 +243,7 @@ namespace Microsoft.Identity.Json
         }
 
         /// <summary>
-        /// Gets the type of the current JSON token. 
+        /// Gets the type of the current JSON token.
         /// </summary>
         public virtual JsonToken TokenType => _tokenType;
 
@@ -278,7 +278,7 @@ namespace Microsoft.Identity.Json
         }
 
         /// <summary>
-        /// Gets the path of the current JSON token. 
+        /// Gets the path of the current JSON token.
         /// </summary>
         public virtual string Path
         {
@@ -750,7 +750,7 @@ namespace Microsoft.Identity.Json
                 case JsonToken.Integer:
                 case JsonToken.Float:
                     object v = Value;
-                    
+
                     if (v is decimal d)
                     {
                         return d;

@@ -36,7 +36,7 @@ using Microsoft.Identity.Json.Utilities;
 
 namespace Microsoft.Identity.Json
 {
-    public partial class JsonTextWriter
+    internal partial class JsonTextWriter
     {
         // It's not safe to perform the async methods here in a derived class as if the synchronous equivalent
         // has been overriden then the asychronous method will no longer be doing the same operation.
@@ -984,7 +984,7 @@ namespace Microsoft.Identity.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public override Task WriteValueAsync(sbyte value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteIntegerValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
@@ -998,7 +998,7 @@ namespace Microsoft.Identity.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public override Task WriteValueAsync(sbyte? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
@@ -1117,7 +1117,7 @@ namespace Microsoft.Identity.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public override Task WriteValueAsync(uint value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteIntegerValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
@@ -1131,7 +1131,7 @@ namespace Microsoft.Identity.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public override Task WriteValueAsync(uint? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
@@ -1150,7 +1150,7 @@ namespace Microsoft.Identity.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public override Task WriteValueAsync(ulong value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteIntegerValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
@@ -1164,7 +1164,7 @@ namespace Microsoft.Identity.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public override Task WriteValueAsync(ulong? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
@@ -1213,7 +1213,7 @@ namespace Microsoft.Identity.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public override Task WriteValueAsync(ushort value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteIntegerValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
@@ -1227,7 +1227,7 @@ namespace Microsoft.Identity.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public override Task WriteValueAsync(ushort? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);

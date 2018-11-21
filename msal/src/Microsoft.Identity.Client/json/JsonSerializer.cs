@@ -42,7 +42,7 @@ namespace Microsoft.Identity.Json
     /// Serializes and deserializes objects into and from the JSON format.
     /// The <see cref="JsonSerializer"/> enables you to control how objects are encoded into JSON.
     /// </summary>
-    public class JsonSerializer
+    internal class JsonSerializer
     {
         internal TypeNameHandling _typeNameHandling;
         internal TypeNameAssemblyFormatHandling _typeNameAssemblyFormatHandling;
@@ -575,12 +575,12 @@ namespace Microsoft.Identity.Json
 
         /// <summary>
         /// Creates a new <see cref="JsonSerializer"/> instance.
-        /// The <see cref="JsonSerializer"/> will not use default settings 
+        /// The <see cref="JsonSerializer"/> will not use default settings
         /// from <see cref="JsonConvert.DefaultSettings"/>.
         /// </summary>
         /// <returns>
         /// A new <see cref="JsonSerializer"/> instance.
-        /// The <see cref="JsonSerializer"/> will not use default settings 
+        /// The <see cref="JsonSerializer"/> will not use default settings
         /// from <see cref="JsonConvert.DefaultSettings"/>.
         /// </returns>
         public static JsonSerializer Create()
@@ -590,13 +590,13 @@ namespace Microsoft.Identity.Json
 
         /// <summary>
         /// Creates a new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
-        /// The <see cref="JsonSerializer"/> will not use default settings 
+        /// The <see cref="JsonSerializer"/> will not use default settings
         /// from <see cref="JsonConvert.DefaultSettings"/>.
         /// </summary>
         /// <param name="settings">The settings to be applied to the <see cref="JsonSerializer"/>.</param>
         /// <returns>
         /// A new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
-        /// The <see cref="JsonSerializer"/> will not use default settings 
+        /// The <see cref="JsonSerializer"/> will not use default settings
         /// from <see cref="JsonConvert.DefaultSettings"/>.
         /// </returns>
         public static JsonSerializer Create(JsonSerializerSettings settings)
@@ -613,12 +613,12 @@ namespace Microsoft.Identity.Json
 
         /// <summary>
         /// Creates a new <see cref="JsonSerializer"/> instance.
-        /// The <see cref="JsonSerializer"/> will use default settings 
+        /// The <see cref="JsonSerializer"/> will use default settings
         /// from <see cref="JsonConvert.DefaultSettings"/>.
         /// </summary>
         /// <returns>
         /// A new <see cref="JsonSerializer"/> instance.
-        /// The <see cref="JsonSerializer"/> will use default settings 
+        /// The <see cref="JsonSerializer"/> will use default settings
         /// from <see cref="JsonConvert.DefaultSettings"/>.
         /// </returns>
         public static JsonSerializer CreateDefault()
@@ -631,13 +631,13 @@ namespace Microsoft.Identity.Json
 
         /// <summary>
         /// Creates a new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
-        /// The <see cref="JsonSerializer"/> will use default settings 
+        /// The <see cref="JsonSerializer"/> will use default settings
         /// from <see cref="JsonConvert.DefaultSettings"/> as well as the specified <see cref="JsonSerializerSettings"/>.
         /// </summary>
         /// <param name="settings">The settings to be applied to the <see cref="JsonSerializer"/>.</param>
         /// <returns>
         /// A new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
-        /// The <see cref="JsonSerializer"/> will use default settings 
+        /// The <see cref="JsonSerializer"/> will use default settings
         /// from <see cref="JsonConvert.DefaultSettings"/> as well as the specified <see cref="JsonSerializerSettings"/>.
         /// </returns>
         public static JsonSerializer CreateDefault(JsonSerializerSettings settings)

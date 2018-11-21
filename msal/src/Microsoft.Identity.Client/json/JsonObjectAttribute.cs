@@ -31,10 +31,10 @@ namespace Microsoft.Identity.Json
     /// Instructs the <see cref="JsonSerializer"/> how to serialize the object.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = false)]
-    public sealed class JsonObjectAttribute : JsonContainerAttribute
+    internal sealed class JsonObjectAttribute : JsonContainerAttribute
     {
         private MemberSerialization _memberSerialization = MemberSerialization.OptOut;
-        
+
         // yuck. can't set nullable properties on an attribute in C#
         // have to use this approach to get an unset default state
         internal Required? _itemRequired;

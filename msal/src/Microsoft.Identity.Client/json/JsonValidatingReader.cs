@@ -52,7 +52,7 @@ namespace Microsoft.Identity.Json
     /// </note>
     /// </summary>
     [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
-    public class JsonValidatingReader : JsonReader, IJsonLineInfo
+    internal class JsonValidatingReader : JsonReader, IJsonLineInfo
     {
         private class SchemaScope
         {
@@ -121,7 +121,7 @@ namespace Microsoft.Identity.Json
         public override int Depth => _reader.Depth;
 
         /// <summary>
-        /// Gets the path of the current JSON token. 
+        /// Gets the path of the current JSON token.
         /// </summary>
         public override string Path => _reader.Path;
 

@@ -41,7 +41,7 @@ namespace Microsoft.Identity.Json.Linq
     /// <summary>
     /// Represents a value in JSON (string, integer, date, etc).
     /// </summary>
-    public partial class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
+    internal partial class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
 #if HAVE_ICONVERTIBLE
         , IConvertible
 #endif
@@ -95,7 +95,7 @@ namespace Microsoft.Identity.Json.Linq
         /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
         /// </summary>
         /// <param name="value">The value.</param>
-        [CLSCompliant(false)]
+        // [ClsCompliant(false)]
         public JValue(ulong value)
             : this(value, JTokenType.Integer)
         {

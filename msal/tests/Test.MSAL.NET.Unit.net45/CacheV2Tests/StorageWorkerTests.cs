@@ -305,7 +305,7 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
             return token;
         }
 
-        public JObject GetAccessTokenJsonWithScopes(HashSet<string> scopes)
+        private JObject GetAccessTokenJsonWithScopes(HashSet<string> scopes)
         {
             return StorageJsonUtils.CredentialToJson(GetAccessTokenWithScopes(scopes));
         }

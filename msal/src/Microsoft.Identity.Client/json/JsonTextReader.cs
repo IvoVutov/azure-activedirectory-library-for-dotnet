@@ -53,7 +53,7 @@ namespace Microsoft.Identity.Json
     /// <summary>
     /// Represents a reader that provides fast, non-cached, forward-only access to JSON text data.
     /// </summary>
-    public partial class JsonTextReader : JsonReader, IJsonLineInfo
+    internal partial class JsonTextReader : JsonReader, IJsonLineInfo
     {
         private const char UnicodeReplacementChar = '\uFFFD';
         private const int MaximumJavascriptIntegerCharacterLength = 380;
@@ -160,7 +160,7 @@ namespace Microsoft.Identity.Json
         }
 
         private void ParseReadString(char quote, ReadType readType)
-        { 
+        {
             SetPostValueState(true);
 
             switch (readType)
@@ -1928,7 +1928,7 @@ namespace Microsoft.Identity.Json
         }
 
         private void ParseReadNumber(ReadType readType, char firstChar, int initialPosition)
-        { 
+        {
             // set state to PostValue now so that if there is an error parsing the number then the reader can continue
             SetPostValueState(true);
 
@@ -2197,7 +2197,7 @@ namespace Microsoft.Identity.Json
 
 #if HAVE_BIG_INTEGER
         // By using the BigInteger type in a separate method,
-        // the runtime can execute the ParseNumber even if 
+        // the runtime can execute the ParseNumber even if
         // the System.Numerics.BigInteger.Parse method is
         // missing, which happens in some versions of Mono
         [MethodImpl(MethodImplOptions.NoInlining)]
