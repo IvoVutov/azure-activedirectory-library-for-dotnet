@@ -335,7 +335,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
         public JObject Read(string relativePath)
         {
             byte[] fileContent = _fileIo.Read(relativePath);
-            return fileContent.Length == 0 ? null : DecryptParse(fileContent, relativePath);
+            return fileContent.Length == 0 ? new JObject() : DecryptParse(fileContent, relativePath);
         }
 
         private JObject DecryptParse(byte[] fileContent, string relativePath)
@@ -364,31 +364,6 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
         private string NormalizeKey(string data)
         {
             return data.ToLowerInvariant().Trim();
-        }
-
-        // public only for testing...
-        public string ToSafeFilename(string data)
-        {
-            string normalizedData = NormalizeKey(data);
-            byte[] hash = CreateHash(normalizedData);
-            var sizedHash = new byte[10];
-            Array.Copy(hash, sizedHash, 10);
-            return Base32HexEncode(sizedHash);
-        }
-
-        private byte[] CreateHash(string input)
-        {
-            return Encoding.UTF8.GetBytes(input);
-            // TODO: need to resolve this with platform code...
-            //using (var sha = new SHA256Managed())
-            //{
-            //    return sha.ComputeHash(Encoding.UTF8.GetBytes(input));
-            //}
-        }
-
-        private string Base32HexEncode(byte[] input)
-        {
-            return Base32Hex.ToBase32String(input);
         }
 
         // public for tests

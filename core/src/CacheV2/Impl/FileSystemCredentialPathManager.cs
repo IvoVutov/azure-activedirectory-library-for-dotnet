@@ -65,7 +65,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
             byte[] hash = CreateHash(normalizedData);
             var sizedHash = new byte[10];
             Array.Copy(hash, sizedHash, 10);
-            return Base32HexEncode(sizedHash);
+            return Base32Hex.ToBase32String(sizedHash);
         }
 
         public string GetCredentialPath(
@@ -146,11 +146,6 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
             return path;
         }
 
-        private string Base32HexEncode(byte[] input)
-        {
-            return input.ToBase32String();
-        }
-
         private string NormalizeKey(string data)
         {
             return data.ToLowerInvariant().Trim();
@@ -158,12 +153,8 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
 
         private byte[] CreateHash(string input)
         {
-            return Encoding.UTF8.GetBytes(input);
-            // TODO: consolidate this with platform encryption values...
-            //using (var sha = new SHA256Managed())
-            //{
-            //    return sha.ComputeHash(Encoding.UTF8.GetBytes(input));
-            //}
+            var crypto = PlatformProxyFactory.GetPlatformProxy().CryptographyManager;
+            return crypto.CreateSha256HashBytes(input);
         }
 
         private string GetCommonPathPrefix(string homeAccountId, string environment)

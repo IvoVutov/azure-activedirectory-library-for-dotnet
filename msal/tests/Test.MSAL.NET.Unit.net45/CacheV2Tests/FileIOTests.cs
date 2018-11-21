@@ -1,4 +1,31 @@
-﻿using System;
+﻿// ------------------------------------------------------------------------------
+// 
+// Copyright (c) Microsoft Corporation.
+// All rights reserved.
+// 
+// This code is licensed under the MIT License.
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files(the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions :
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// ------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -6,12 +33,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Identity.Core.Helpers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Test.MSAL.NET.Common.Core.Helpers;
 #if NETFRAMEWORK
 using Microsoft.Identity.Core.Platforms.net45.CacheV2;
 #endif
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Test.MSAL.NET.Common.Core.Helpers;
 
 namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
 {
@@ -116,7 +142,7 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
             Assert.AreEqual("C:\\root", p);
 
             p = _io.GetParentPath(p);
-            Assert.AreEqual("C:", p); // todo: this varies from c++, in c++ it's c:\\
+            Assert.AreEqual("C:\\", p);
 
             p = _io.GetParentPath(p);
             Assert.AreEqual(string.Empty, p); // todo: this varies from c++, in c++ it's c:\\
@@ -499,7 +525,8 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
 
             using (new FileMutex(FileName))
             {
-                ThreadTestUtils.RunActionOnThreadAndJoin(() => Assert.ThrowsException<InvalidOperationException>(() => _io.Read(FileName)));
+                ThreadTestUtils.RunActionOnThreadAndJoin(
+                    () => Assert.ThrowsException<InvalidOperationException>(() => _io.Read(FileName)));
             }
         }
 
@@ -743,7 +770,8 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
             // Mutex name for the root directory, which is the parent directory for the directory we're about to try to delete
             using (new FileMutex(string.Empty))
             {
-                ThreadTestUtils.RunActionOnThreadAndJoin(() => Assert.ThrowsException<InvalidOperationException>(() => _io.DeleteContent("x")));
+                ThreadTestUtils.RunActionOnThreadAndJoin(
+                    () => Assert.ThrowsException<InvalidOperationException>(() => _io.DeleteContent("x")));
             }
         }
     }

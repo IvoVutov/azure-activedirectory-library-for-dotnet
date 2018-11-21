@@ -43,7 +43,6 @@ namespace Microsoft.Identity.Core.Platforms.net45.CacheV2
             _mutexName = MakeMutexName(relativePath);
             if (!TryLock())
             {
-                Unlock();
                 throw new InvalidOperationException("unable to lock mutex");
             }
         }
@@ -80,6 +79,9 @@ namespace Microsoft.Identity.Core.Platforms.net45.CacheV2
                 Debug.WriteLine($"MUTEX ACQUIRED: ({Thread.CurrentThread.ManagedThreadId}) {_mutexName}");
                 return true;
             }
+
+            _systemMutex.Dispose();
+            _systemMutex = null;
 
             return false;
         }

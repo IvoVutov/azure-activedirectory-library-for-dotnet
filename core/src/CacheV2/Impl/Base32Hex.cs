@@ -26,7 +26,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -56,7 +55,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
         ///     https://github.com/google/google-authenticator/wiki/Key-Uri-Format indicates that padding SHOULD be omitted.
         ///     To meet both requirements, you can omit padding when required.
         /// </remarks>
-        public static string ToBase32String(this byte[] input, bool addPadding = true)
+        public static string ToBase32String(byte[] input, bool addPadding = true)
         {
             if (input == null || input.Length == 0)
             {
@@ -78,7 +77,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
             return result;
         }
 
-        public static string EncodeAsBase32String(this string input, bool addPadding = true)
+        public static string EncodeAsBase32String(string input, bool addPadding = true)
         {
             if (string.IsNullOrEmpty(input))
             {
@@ -86,7 +85,7 @@ namespace Microsoft.Identity.Core.CacheV2.Impl
             }
 
             byte[] bytes = Encoding.UTF8.GetBytes(input);
-            string result = bytes.ToBase32String(addPadding);
+            string result = ToBase32String(bytes, addPadding);
             return result;
         }
 

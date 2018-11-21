@@ -44,7 +44,7 @@ namespace Microsoft.Identity.Core
 
         public string CreateBase64UrlEncodedSha256Hash(string input)
         {
-            if (string.IsNullOrEmpty(input))
+            if (string.IsNullOrWhiteSpace(input))
             {
                 return null;
             }
@@ -144,6 +144,15 @@ namespace Microsoft.Identity.Core
                 // actual exception as inner.
                 throw ae.InnerExceptions[0];
             }
+        }
+
+        public byte[] CreateSha256HashBytes(string input)
+        {
+            IBuffer inputBuffer = CryptographicBuffer.ConvertStringToBinary(input, BinaryStringEncoding.Utf8);
+            var hasher = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha256);
+
+            IBuffer hashed = hasher.HashData(inputBuffer);
+            return hashed.ToArray();
         }
     }
 }

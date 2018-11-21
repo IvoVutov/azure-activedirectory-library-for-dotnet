@@ -54,14 +54,15 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
         [TestMethod]
         public void ToSafeFilename()
         {
-            Assert.AreEqual("98JPIEIUEFT7FFJK", _storageWorker.ToSafeFilename("!@#$%^&*()-+"));
-            Assert.AreEqual("SEOC8GKOVGE196NR", _storageWorker.ToSafeFilename(""));
-            Assert.AreEqual("82E183VGAG9CFOF4", _storageWorker.ToSafeFilename("=^^="));
-            Assert.AreEqual("EOE7CM5P6N5I6EAS", _storageWorker.ToSafeFilename("alreadySafeButStill"));
-            Assert.AreEqual("EOE7CM5P6N5I6EAS", _storageWorker.ToSafeFilename("AlReAdYsAfEbUtStIlL"));
+            // TODO: Move this test to CredentialPathManager tests...
+            Assert.AreEqual("98JPIEIUEFT7FFJK", _credentialPathManager.ToSafeFilename("!@#$%^&*()-+"));
+            Assert.AreEqual("SEOC8GKOVGE196NR", _credentialPathManager.ToSafeFilename(""));
+            Assert.AreEqual("82E183VGAG9CFOF4", _credentialPathManager.ToSafeFilename("=^^="));
+            Assert.AreEqual("EOE7CM5P6N5I6EAS", _credentialPathManager.ToSafeFilename("alreadySafeButStill"));
+            Assert.AreEqual("EOE7CM5P6N5I6EAS", _credentialPathManager.ToSafeFilename("AlReAdYsAfEbUtStIlL"));
             Assert.AreEqual(
                 "EPGP81EH0BA8BLKC",
-                _storageWorker.ToSafeFilename("================================================"));
+                _credentialPathManager.ToSafeFilename("================================================"));
         }
 
         [TestMethod]
@@ -102,11 +103,11 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
         {
             string path = "UD";
 
-            path = Path.Combine(path, "u_" + _storageWorker.ToSafeFilename(MockTestConstants.GetHomeAccountId()));
-            path = Path.Combine(path, "e_" + _storageWorker.ToSafeFilename(MockTestConstants.Environment));
+            path = Path.Combine(path, "u_" + _credentialPathManager.ToSafeFilename(MockTestConstants.GetHomeAccountId()));
+            path = Path.Combine(path, "e_" + _credentialPathManager.ToSafeFilename(MockTestConstants.Environment));
             path = Path.Combine(path, "AT");
-            path = Path.Combine(path, "r_" + _storageWorker.ToSafeFilename(MockTestConstants.Realm));
-            path = Path.Combine(path, "c_" + _storageWorker.ToSafeFilename(MockTestConstants.ClientId) + ".bin");
+            path = Path.Combine(path, "r_" + _credentialPathManager.ToSafeFilename(MockTestConstants.Realm));
+            path = Path.Combine(path, "c_" + _credentialPathManager.ToSafeFilename(MockTestConstants.ClientId) + ".bin");
 
             Assert.AreEqual(path, _storageWorker.GetCredentialPath(MockTestConstants.GetAccessToken()));
         }
@@ -115,10 +116,10 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
         public void GetRefreshTokenPath()
         {
             string path = "UD";
-            path = Path.Combine(path, "u_" + _storageWorker.ToSafeFilename(MockTestConstants.GetHomeAccountId()));
-            path = Path.Combine(path, "e_" + _storageWorker.ToSafeFilename(MockTestConstants.Environment));
+            path = Path.Combine(path, "u_" + _credentialPathManager.ToSafeFilename(MockTestConstants.GetHomeAccountId()));
+            path = Path.Combine(path, "e_" + _credentialPathManager.ToSafeFilename(MockTestConstants.Environment));
             path = Path.Combine(path, "RT");
-            path = Path.Combine(path, "c_" + _storageWorker.ToSafeFilename(MockTestConstants.ClientId) + ".bin");
+            path = Path.Combine(path, "c_" + _credentialPathManager.ToSafeFilename(MockTestConstants.ClientId) + ".bin");
 
             Assert.AreEqual(path, _storageWorker.GetCredentialPath(MockTestConstants.GetRefreshToken()));
         }
@@ -127,10 +128,10 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
         public void GetFamilyRefreshTokenPath()
         {
             string path = "UD";
-            path = Path.Combine(path, "u_" + _storageWorker.ToSafeFilename(MockTestConstants.GetHomeAccountId()));
-            path = Path.Combine(path, "e_" + _storageWorker.ToSafeFilename(MockTestConstants.Environment));
+            path = Path.Combine(path, "u_" + _credentialPathManager.ToSafeFilename(MockTestConstants.GetHomeAccountId()));
+            path = Path.Combine(path, "e_" + _credentialPathManager.ToSafeFilename(MockTestConstants.Environment));
             path = Path.Combine(path, "FRT");
-            path = Path.Combine(path, "f_" + _storageWorker.ToSafeFilename(MockTestConstants.FamilyId) + ".bin");
+            path = Path.Combine(path, "f_" + _credentialPathManager.ToSafeFilename(MockTestConstants.FamilyId) + ".bin");
 
             Assert.AreEqual(path, _storageWorker.GetCredentialPath(MockTestConstants.GetFamilyRefreshToken()));
         }
@@ -139,11 +140,11 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
         public void GetIdTokenPath()
         {
             string path = "UD";
-            path = Path.Combine(path, "u_" + _storageWorker.ToSafeFilename(MockTestConstants.GetHomeAccountId()));
-            path = Path.Combine(path, "e_" + _storageWorker.ToSafeFilename(MockTestConstants.Environment));
+            path = Path.Combine(path, "u_" + _credentialPathManager.ToSafeFilename(MockTestConstants.GetHomeAccountId()));
+            path = Path.Combine(path, "e_" + _credentialPathManager.ToSafeFilename(MockTestConstants.Environment));
             path = Path.Combine(path, "ID");
-            path = Path.Combine(path, "r_" + _storageWorker.ToSafeFilename(MockTestConstants.Realm));
-            path = Path.Combine(path, "c_" + _storageWorker.ToSafeFilename(MockTestConstants.ClientId) + ".bin");
+            path = Path.Combine(path, "r_" + _credentialPathManager.ToSafeFilename(MockTestConstants.Realm));
+            path = Path.Combine(path, "c_" + _credentialPathManager.ToSafeFilename(MockTestConstants.ClientId) + ".bin");
 
             Assert.AreEqual(path, _storageWorker.GetCredentialPath(MockTestConstants.GetIdToken()));
         }
@@ -153,10 +154,10 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
         {
             string path = "UD";
 
-            path = Path.Combine(path, "u_" + _storageWorker.ToSafeFilename(MockTestConstants.GetHomeAccountId()));
-            path = Path.Combine(path, "e_" + _storageWorker.ToSafeFilename(MockTestConstants.Environment));
+            path = Path.Combine(path, "u_" + _credentialPathManager.ToSafeFilename(MockTestConstants.GetHomeAccountId()));
+            path = Path.Combine(path, "e_" + _credentialPathManager.ToSafeFilename(MockTestConstants.Environment));
             path = Path.Combine(path, "Accounts");
-            path = Path.Combine(path, "r_" + _storageWorker.ToSafeFilename(MockTestConstants.Realm) + ".bin");
+            path = Path.Combine(path, "r_" + _credentialPathManager.ToSafeFilename(MockTestConstants.Realm) + ".bin");
 
             Assert.AreEqual<string>(path, _credentialPathManager.GetAccountPath(MockTestConstants.GetAccount()));
         }
@@ -165,8 +166,8 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
         public void GetAppMetadataPath()
         {
             string path = "AppMetadata";
-            path = Path.Combine(path, "e_" + _storageWorker.ToSafeFilename(MockTestConstants.Environment));
-            path = Path.Combine(path, "c_" + _storageWorker.ToSafeFilename(MockTestConstants.ClientId) + ".bin");
+            path = Path.Combine(path, "e_" + _credentialPathManager.ToSafeFilename(MockTestConstants.Environment));
+            path = Path.Combine(path, "c_" + _credentialPathManager.ToSafeFilename(MockTestConstants.ClientId) + ".bin");
 
             Assert.AreEqual<string>(path, _credentialPathManager.GetAppMetadataPath(MockTestConstants.GetAppMetadata()));
         }

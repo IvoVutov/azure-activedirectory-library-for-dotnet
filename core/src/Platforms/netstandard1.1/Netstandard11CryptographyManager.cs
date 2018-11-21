@@ -65,5 +65,10 @@ namespace Microsoft.Identity.Core
         {
             throw new NotImplementedException();
         }
+
+        public byte[] CreateSha256HashBytes(string input)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
