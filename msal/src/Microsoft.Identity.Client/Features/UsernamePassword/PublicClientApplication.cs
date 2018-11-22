@@ -57,7 +57,7 @@ namespace Microsoft.Identity.Client
         private async Task<AuthenticationResult> AcquireTokenByUsernamePasswordAsync(IEnumerable<string> scopes, UsernamePasswordInput usernamePasswordInput)
         {
             Authority authority = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, Authority, ValidateAuthority);
-            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCache);
+            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCacheAdapter);
             var handler = new UsernamePasswordRequest(
                 HttpManager,
                 CryptographyManager,

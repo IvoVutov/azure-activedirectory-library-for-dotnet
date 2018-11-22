@@ -33,6 +33,7 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.CacheV2;
 using Microsoft.Identity.Client.Internal;
 using Microsoft.Identity.Core;
 using Microsoft.Identity.Core.Cache;
@@ -226,6 +227,9 @@ namespace Test.MSAL.NET.Unit
             {
                 httpManager.AddInstanceDiscoveryMockHandler();
 
+                var userCache = new TokenCache();
+                var appCache = new TokenCache();
+
                 var app = new ConfidentialClientApplication(
                     httpManager,
                     _telemetryManager,
@@ -233,8 +237,8 @@ namespace Test.MSAL.NET.Unit
                     ClientApplicationBase.DefaultAuthority,
                     MsalTestConstants.RedirectUri,
                     new ClientCredential(MsalTestConstants.ClientSecret),
-                    new TokenCache(),
-                    new TokenCache())
+                    userCache,
+                    appCache)
                 {
                     ValidateAuthority = false
                 };
@@ -249,12 +253,12 @@ namespace Test.MSAL.NET.Unit
                 Assert.AreEqual(MsalTestConstants.Scope.AsSingleString(), result.Scopes.AsSingleString());
 
                 //make sure user token cache is empty
-                Assert.AreEqual(0, app.UserTokenCache.TokenCacheAccessor.AccessTokenCount);
-                Assert.AreEqual(0, app.UserTokenCache.TokenCacheAccessor.RefreshTokenCount);
+                Assert.AreEqual(0, userCache.TokenCacheAccessor.AccessTokenCount);
+                Assert.AreEqual(0, userCache.TokenCacheAccessor.RefreshTokenCount);
 
                 //check app token cache count to be 1
-                Assert.AreEqual(1, app.AppTokenCache.TokenCacheAccessor.AccessTokenCount);
-                Assert.AreEqual(0, app.AppTokenCache.TokenCacheAccessor.RefreshTokenCount); //no refresh tokens are returned
+                Assert.AreEqual(1, appCache.TokenCacheAccessor.AccessTokenCount);
+                Assert.AreEqual(0, appCache.TokenCacheAccessor.RefreshTokenCount); //no refresh tokens are returned
 
                 //call AcquireTokenForClientAsync again to get result back from the cache
                 task = app.AcquireTokenForClientAsync(MsalTestConstants.Scope.ToArray());
@@ -264,19 +268,21 @@ namespace Test.MSAL.NET.Unit
                 Assert.AreEqual(MsalTestConstants.Scope.AsSingleString(), result.Scopes.AsSingleString());
 
                 //make sure user token cache is empty
-                Assert.AreEqual(0, app.UserTokenCache.TokenCacheAccessor.AccessTokenCount);
-                Assert.AreEqual(0, app.UserTokenCache.TokenCacheAccessor.RefreshTokenCount);
+                Assert.AreEqual(0, userCache.TokenCacheAccessor.AccessTokenCount);
+                Assert.AreEqual(0, userCache.TokenCacheAccessor.RefreshTokenCount);
 
                 //check app token cache count to be 1
-                Assert.AreEqual(1, app.AppTokenCache.TokenCacheAccessor.AccessTokenCount);
-                Assert.AreEqual(0, app.AppTokenCache.TokenCacheAccessor.RefreshTokenCount); //no refresh tokens are returned
+                Assert.AreEqual(1, appCache.TokenCacheAccessor.AccessTokenCount);
+                Assert.AreEqual(0, appCache.TokenCacheAccessor.RefreshTokenCount); //no refresh tokens are returned
             }
         }
 
         private ConfidentialClientApplication CreateConfidentialClient(
             MockHttpManager httpManager,
             ClientCredential cc,
-            int tokenResponses)
+            int tokenResponses,
+            ITokenCache userCache,
+            ITokenCache appCache)
         {
             var app = new ConfidentialClientApplication(
                 httpManager,
@@ -285,8 +291,8 @@ namespace Test.MSAL.NET.Unit
                 ClientApplicationBase.DefaultAuthority,
                 MsalTestConstants.RedirectUri,
                 cc,
-                new TokenCache(),
-                new TokenCache())
+                userCache,
+                appCache)
             {
                 ValidateAuthority = false
             };
@@ -309,10 +315,13 @@ namespace Test.MSAL.NET.Unit
             {
                 httpManager.AddInstanceDiscoveryMockHandler();
 
+                var userCache = new TokenCache();
+                var appCache = new TokenCache();
+
                 var cc = new ClientCredential(
                     new ClientAssertionCertificate(
                         new X509Certificate2(ResourceHelper.GetTestResourceRelativePath("valid.crtfile"))));
-                var app = CreateConfidentialClient(httpManager, cc, 3);
+                var app = CreateConfidentialClient(httpManager, cc, 3, userCache, appCache);
 
                 Task<AuthenticationResult> task = app.AcquireTokenForClientAsync(MsalTestConstants.Scope.ToArray());
                 var result = task.Result;
@@ -321,12 +330,12 @@ namespace Test.MSAL.NET.Unit
                 Assert.AreEqual(MsalTestConstants.Scope.AsSingleString(), result.Scopes.AsSingleString());
 
                 //make sure user token cache is empty
-                Assert.AreEqual(0, app.UserTokenCache.TokenCacheAccessor.AccessTokenCount);
-                Assert.AreEqual(0, app.UserTokenCache.TokenCacheAccessor.RefreshTokenCount);
+                Assert.AreEqual(0, userCache.TokenCacheAccessor.AccessTokenCount);
+                Assert.AreEqual(0, userCache.TokenCacheAccessor.RefreshTokenCount);
 
                 //check app token cache count to be 1
-                Assert.AreEqual(1, app.AppTokenCache.TokenCacheAccessor.AccessTokenCount);
-                Assert.AreEqual(0, app.AppTokenCache.TokenCacheAccessor.RefreshTokenCount); //no refresh tokens are returned
+                Assert.AreEqual(1, appCache.TokenCacheAccessor.AccessTokenCount);
+                Assert.AreEqual(0, appCache.TokenCacheAccessor.RefreshTokenCount); //no refresh tokens are returned
 
                 //assert client credential
                 Assert.IsNotNull(cc.Assertion);
@@ -358,6 +367,9 @@ namespace Test.MSAL.NET.Unit
             {
                 httpManager.AddInstanceDiscoveryMockHandler();
 
+                var userCache = new TokenCache();
+                var appCache = new TokenCache();
+
                 var cc = new ClientCredential(
                     new ClientAssertionCertificate(
                         new X509Certificate2(ResourceHelper.GetTestResourceRelativePath("valid.crtfile"))));
@@ -366,7 +378,7 @@ namespace Test.MSAL.NET.Unit
                 // However, this 2nd one is NOT consumed by this test and the previous
                 // test did not check for all mock requests to be flushed out...
 
-                var app = CreateConfidentialClient(httpManager, cc, 1);
+                var app = CreateConfidentialClient(httpManager, cc, 1, userCache, appCache);
                 Task<AuthenticationResult> task = app.AcquireTokenForClientAsync(MsalTestConstants.Scope.ToArray());
                 var result = task.Result;
                 Assert.IsNotNull(
@@ -747,8 +759,8 @@ namespace Test.MSAL.NET.Unit
                 var result = await app.AcquireTokenByAuthorizationCodeAsync("some-code", MsalTestConstants.Scope)
                                       .ConfigureAwait(false);
                 Assert.IsNotNull(result);
-                Assert.AreEqual(1, app.UserTokenCache.TokenCacheAccessor.AccessTokenCount);
-                Assert.AreEqual(1, app.UserTokenCache.TokenCacheAccessor.RefreshTokenCount);
+                Assert.AreEqual(1, cache.TokenCacheAccessor.AccessTokenCount);
+                Assert.AreEqual(1, cache.TokenCacheAccessor.RefreshTokenCount);
 
                 cache = new TokenCache()
                 {

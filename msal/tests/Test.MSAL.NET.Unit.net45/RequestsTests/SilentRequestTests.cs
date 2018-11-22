@@ -31,6 +31,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.CacheV2;
 using Microsoft.Identity.Client.Internal;
 using Microsoft.Identity.Client.Internal.Requests;
 using Microsoft.Identity.Core;
@@ -82,12 +83,20 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                     ClientId = MsalTestConstants.ClientId,
                     AadInstanceDiscovery = aadInstanceDiscovery
                 };
+                var cacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                    new TelemetryManager(),
+                    aadInstanceDiscovery,
+                    _validatedAuthoritiesCache,
+                    MsalTestConstants.ClientId);
+
+                cacheAdapter.TokenCache = cache;
+
                 var parameters = new AuthenticationRequestParameters()
                 {
                     Authority = authority,
                     ClientId = MsalTestConstants.ClientId,
                     Scope = MsalTestConstants.Scope,
-                    TokenCache = cache,
+                    TokenCacheAdapter = cacheAdapter,
                     Account = new Account(MsalTestConstants.UserIdentifier, MsalTestConstants.DisplayableId, null),
                     RequestContext = new RequestContext(null, new MsalLogger(Guid.NewGuid(), null))
                 };
@@ -123,12 +132,20 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                 };
                 TokenCacheHelper.PopulateCache(cache.TokenCacheAccessor);
 
+                var cacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                    new TelemetryManager(),
+                    aadInstanceDiscovery,
+                    _validatedAuthoritiesCache,
+                    MsalTestConstants.ClientId);
+
+                cacheAdapter.TokenCache = cache;
+
                 AuthenticationRequestParameters parameters = new AuthenticationRequestParameters()
                 {
                     Authority = authority,
                     ClientId = MsalTestConstants.ClientId,
                     Scope = MsalTestConstants.Scope,
-                    TokenCache = cache,
+                    TokenCacheAdapter = cacheAdapter,
                     RequestContext = new RequestContext(null, new MsalLogger(Guid.Empty, null)),
                     Account = new Account(MsalTestConstants.UserIdentifier, MsalTestConstants.DisplayableId, null)
                 };
@@ -182,6 +199,14 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                 var authority = Authority.CreateAuthority(_validatedAuthoritiesCache, aadInstanceDiscovery, MsalTestConstants.AuthorityHomeTenant, false);
                 _cache = null;
 
+                var cacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                    new TelemetryManager(),
+                    aadInstanceDiscovery,
+                    _validatedAuthoritiesCache,
+                    MsalTestConstants.ClientId);
+
+                cacheAdapter.TokenCache = _cache;
+
                 var parameters = new AuthenticationRequestParameters()
                 {
                     Authority = authority,
@@ -192,7 +217,7 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                             "some-scope1",
                             "some-scope2"
                         }),
-                    TokenCache = _cache,
+                    TokenCacheAdapter = cacheAdapter,
                     Account = new Account(MsalTestConstants.UserIdentifier, MsalTestConstants.DisplayableId, null),
                     RequestContext = new RequestContext(null, new MsalLogger(Guid.NewGuid(), null))
                 };
@@ -230,6 +255,14 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                     AadInstanceDiscovery = aadInstanceDiscovery
                 };
 
+                var cacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                    new TelemetryManager(),
+                    aadInstanceDiscovery,
+                    _validatedAuthoritiesCache,
+                    MsalTestConstants.ClientId);
+
+                cacheAdapter.TokenCache = _cache;
+
                 httpManager.AddInstanceDiscoveryMockHandler();
 
                 var parameters = new AuthenticationRequestParameters()
@@ -242,7 +275,7 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                             "some-scope1",
                             "some-scope2"
                         }),
-                    TokenCache = _cache,
+                    TokenCacheAdapter = cacheAdapter,
                     Account = new Account(MsalTestConstants.UserIdentifier, MsalTestConstants.DisplayableId, null),
                     RequestContext = new RequestContext(null, new MsalLogger(Guid.NewGuid(), null))
                 };

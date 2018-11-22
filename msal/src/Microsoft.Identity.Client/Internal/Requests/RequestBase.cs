@@ -31,6 +31,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client.CacheV2;
 using Microsoft.Identity.Core;
 using Microsoft.Identity.Core.Cache;
 using Microsoft.Identity.Core.Helpers;
@@ -45,28 +46,13 @@ namespace Microsoft.Identity.Client.Internal.Requests
     {
         internal AuthenticationRequestParameters AuthenticationRequestParameters { get; }
 
-        private TokenCache _tokenCache;
-        internal TokenCache TokenCache
-        {
-            get => _tokenCache;
-            set
-            {
-                _tokenCache = value;
-                if (_tokenCache != null)
-                {
-                    _tokenCache.TelemetryManager = TelemetryManager;
-                    _tokenCache.AadInstanceDiscovery = AadInstanceDiscovery;
-                }
-            }
-        }
-
-
         private readonly ApiEvent.ApiIds _apiId;
         protected IHttpManager HttpManager { get; }
         protected ICryptographyManager CryptographyManager { get; }
         protected ITelemetryManager TelemetryManager { get; }
         protected IValidatedAuthoritiesCache ValidatedAuthoritiesCache { get; }
         protected IAadInstanceDiscovery AadInstanceDiscovery { get; }
+        protected ITokenCacheAdapter TokenCacheAdapter { get; }
 
         protected RequestBase(
             IHttpManager httpManager, 
@@ -82,7 +68,7 @@ namespace Microsoft.Identity.Client.Internal.Requests
             TelemetryManager = telemetryManager;
             ValidatedAuthoritiesCache = validatedAuthoritiesCache;
             AadInstanceDiscovery = aadInstanceDiscovery;
-            TokenCache = authenticationRequestParameters.TokenCache;
+            TokenCacheAdapter = authenticationRequestParameters.TokenCacheAdapter;
             _apiId = apiId;
             
             AuthenticationRequestParameters = authenticationRequestParameters;
@@ -104,13 +90,13 @@ namespace Microsoft.Identity.Client.Internal.Requests
                 authenticationRequestParameters.Authority?.CanonicalAuthority,
                 authenticationRequestParameters.Scope.AsSingleString(),
                 authenticationRequestParameters.ClientId,
-                TokenCache != null,
+                TokenCacheAdapter.TokenCache != null,
                 this.GetType().Name);
 
             string messageWithoutPii = string.Format(
                 CultureInfo.InvariantCulture,
                 "=== Token Acquisition ({1}) started:\n\tCache Provided: {0}",
-                TokenCache != null,
+                TokenCacheAdapter.TokenCache != null,
                 this.GetType().Name);
 
             if (authenticationRequestParameters.Authority != null &&
@@ -264,11 +250,14 @@ namespace Microsoft.Identity.Client.Internal.Requests
             AuthenticationRequestParameters.TenantUpdatedCanonicalAuthority = Authority.UpdateTenantId(
                 AuthenticationRequestParameters.Authority.CanonicalAuthority, idToken?.TenantId);
 
-            if (TokenCache != null)
+            if (TokenCacheAdapter.TokenCache != null)
             {
                 AuthenticationRequestParameters.RequestContext.Logger.Info("Saving Token Response to cache..");
 
-                var tuple = TokenCache.SaveAccessAndRefreshToken(ValidatedAuthoritiesCache, AadInstanceDiscovery, AuthenticationRequestParameters, msalTokenResponse);
+                var tuple = TokenCacheAdapter.SaveAccessAndRefreshToken(
+                    AuthenticationRequestParameters,
+                    msalTokenResponse);
+
                 return new AuthenticationResult(tuple.Item1, tuple.Item2);
             }
             else

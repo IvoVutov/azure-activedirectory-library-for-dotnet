@@ -57,7 +57,7 @@ namespace Microsoft.Identity.Client.Internal.Requests
 
         internal override async Task<AuthenticationResult> ExecuteAsync(CancellationToken cancellationToken)
         {
-            if (TokenCache == null)
+            if (TokenCacheAdapter.TokenCache == null)
             {
                 throw new MsalUiRequiredException(
                     MsalUiRequiredException.TokenCacheNullError,
@@ -66,13 +66,13 @@ namespace Microsoft.Identity.Client.Internal.Requests
 
             // Look for access token.
             var msalAccessTokenItem =
-                await TokenCache.FindAccessTokenAsync(AuthenticationRequestParameters).ConfigureAwait(false);
+                await TokenCacheAdapter.FindAccessTokenAsync(AuthenticationRequestParameters).ConfigureAwait(false);
 
             MsalIdTokenCacheItem msalIdTokenItem = null;
 
             if (msalAccessTokenItem != null)
             {
-                msalIdTokenItem = TokenCache.GetIdTokenCacheItem(
+                msalIdTokenItem = TokenCacheAdapter.GetIdTokenCacheItem(
                     msalAccessTokenItem.GetIdTokenItemKey(),
                     AuthenticationRequestParameters.RequestContext);
             }
@@ -88,7 +88,7 @@ namespace Microsoft.Identity.Client.Internal.Requests
             }
 
             var msalRefreshTokenItem =
-                await TokenCache.FindRefreshTokenAsync(AuthenticationRequestParameters).ConfigureAwait(false);
+                await TokenCacheAdapter.FindRefreshTokenAsync(AuthenticationRequestParameters).ConfigureAwait(false);
 
             if (msalRefreshTokenItem == null)
             {

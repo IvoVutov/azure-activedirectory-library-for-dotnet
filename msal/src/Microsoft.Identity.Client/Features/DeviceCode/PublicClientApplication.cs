@@ -145,7 +145,7 @@ namespace Microsoft.Identity.Client
         {
             Authority authority = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, Authority, ValidateAuthority);
 
-            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCache);
+            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCacheAdapter);
             requestParams.ExtraQueryParameters = extraQueryParameters;
 
             var handler = new DeviceCodeRequest(

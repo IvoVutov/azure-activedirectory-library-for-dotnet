@@ -39,6 +39,7 @@ using Microsoft.Identity.Core.Telemetry;
 using System.Threading;
 using Microsoft.Identity.Core.Http;
 using Microsoft.Identity.Core.WsTrust;
+using Microsoft.Identity.Client.CacheV2;
 
 namespace Microsoft.Identity.Client
 {
@@ -57,8 +58,6 @@ namespace Microsoft.Identity.Client
             ModuleInitializer.EnsureModuleInitialized();
         }
 
-        private TokenCache _userTokenCache;
-
         /// <Summary>
         /// Default Authority used for interactive calls.
         /// </Summary>
@@ -70,6 +69,7 @@ namespace Microsoft.Identity.Client
         internal ITelemetryManager TelemetryManager { get; }
         internal IValidatedAuthoritiesCache ValidatedAuthoritiesCache { get; }
         internal IAadInstanceDiscovery AadInstanceDiscovery { get; }
+        internal ITokenCacheAdapter UserTokenCacheAdapter { get; }
 
         internal ITelemetryReceiver TelemetryReceiver
         {
@@ -115,10 +115,12 @@ namespace Microsoft.Identity.Client
             Authority = authorityInstance.CanonicalAuthority;
             RedirectUri = redirectUri;
             ValidateAuthority = validateAuthority;
-            if (UserTokenCache != null)
-            {
-                UserTokenCache.ClientId = clientId;
-            }
+
+            UserTokenCacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                TelemetryManager,
+                AadInstanceDiscovery,
+                ValidatedAuthoritiesCache,
+                clientId);
 
             RequestContext requestContext = new RequestContext(ClientId, new MsalLogger(Guid.Empty, null));
 
@@ -177,19 +179,10 @@ namespace Microsoft.Identity.Client
         /// <Summary>
         /// Token Cache instance for storing User tokens.
         /// </Summary>
-        internal TokenCache UserTokenCache
+        internal ITokenCache UserTokenCache
         {
-            get => _userTokenCache;
-            set
-            {
-                _userTokenCache = value;
-                if (_userTokenCache != null)
-                {
-                    _userTokenCache.ClientId = ClientId;
-                    _userTokenCache.TelemetryManager = TelemetryManager;
-                    _userTokenCache.AadInstanceDiscovery = AadInstanceDiscovery;
-                }
-            }
+            get => UserTokenCacheAdapter.TokenCache;
+            set => UserTokenCacheAdapter.TokenCache = value;
         }
 
         /// <summary>
@@ -219,7 +212,7 @@ namespace Microsoft.Identity.Client
             }
             else
             {
-                accounts = UserTokenCache.GetAccounts(Authority, ValidateAuthority, requestContext);
+                accounts = UserTokenCacheAdapter.GetAccounts(Authority, ValidateAuthority, requestContext);
             }
 
             return Task.FromResult(accounts);
@@ -307,7 +300,7 @@ namespace Microsoft.Identity.Client
             RequestContext requestContext = CreateRequestContext(Guid.Empty);
             if (account != null)
             {
-                UserTokenCache?.RemoveAccount(account, requestContext);
+                UserTokenCacheAdapter.RemoveAccount(account, requestContext);
             }
 
             return Task.FromResult(0);
@@ -346,7 +339,7 @@ namespace Microsoft.Identity.Client
                 TelemetryManager,
                 ValidatedAuthoritiesCache,
                 AadInstanceDiscovery,
-                CreateRequestParameters(authority, scopes, account, UserTokenCache),
+                CreateRequestParameters(authority, scopes, account, UserTokenCacheAdapter),
                 apiId,
                 forceRefresh);
 
@@ -355,14 +348,14 @@ namespace Microsoft.Identity.Client
 
         internal virtual AuthenticationRequestParameters CreateRequestParameters(Authority authority,
             IEnumerable<string> scopes,
-            IAccount account, TokenCache cache)
+            IAccount account, ITokenCacheAdapter cacheAdapter)
         {
             return new AuthenticationRequestParameters
             {
                 SliceParameters = SliceParameters,
                 Authority = authority,
                 ClientId = ClientId,
-                TokenCache = cache,
+                TokenCacheAdapter = cacheAdapter,
                 Account = account,
                 Scope = ScopeHelper.CreateSortedSetFromEnumerable(scopes),
                 RedirectUri = new Uri(RedirectUri),

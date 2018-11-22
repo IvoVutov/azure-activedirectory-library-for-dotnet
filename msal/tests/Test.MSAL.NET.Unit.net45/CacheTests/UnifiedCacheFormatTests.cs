@@ -42,6 +42,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client.CacheV2;
 using Test.Microsoft.Identity.Core.Unit.Mocks;
 using Test.MSAL.NET.Unit.Mocks;
 
@@ -220,16 +221,16 @@ namespace Test.MSAL.NET.Unit
                 AuthenticationResult result = app.AcquireTokenAsync(MsalTestConstants.Scope).Result;
                 Assert.IsNotNull(result);
 
-                ValidateAt(app.UserTokenCache);
-                ValidateRt(app.UserTokenCache);
-                ValidateIdToken(app.UserTokenCache);
-                ValidateAccount(app.UserTokenCache);
+                ValidateAt(app.UserTokenCacheAdapter);
+                ValidateRt(app.UserTokenCacheAdapter);
+                ValidateIdToken(app.UserTokenCacheAdapter);
+                ValidateAccount(app.UserTokenCacheAdapter);
             }
         }
 
-        private void ValidateAt(TokenCache cache)
+        private void ValidateAt(ITokenCacheAdapter cacheAdapter)
         {
-            var atList = cache.GetAllAccessTokenCacheItems(requestContext);
+            var atList = cacheAdapter.GetAllAccessTokenCacheItems(requestContext);
             Assert.IsTrue(atList.Count == 1);
 
             var actualPayload = JsonConvert.DeserializeObject<JObject>(atList.First());
@@ -254,7 +255,7 @@ namespace Test.MSAL.NET.Unit
                     Assert.AreEqual(expectedPropValue, actualPropValue);
                 }
             }
-            var atCacheItem = cache.GetAllAccessTokensForClient(requestContext).First();
+            var atCacheItem = cacheAdapter.GetAllAccessTokensForClient(requestContext).First();
             var key = atCacheItem.GetKey();
 
             Assert.AreEqual(ExpectedAtCacheKey, key.ToString());
@@ -264,12 +265,12 @@ namespace Test.MSAL.NET.Unit
             Assert.AreEqual(ExpectedAtCacheKeyIosGeneric, key.GetiOSGenericKey());
         }
 
-        private void ValidateRt(TokenCache cache)
+        private void ValidateRt(ITokenCacheAdapter cacheAdapter)
         {
             ValidateCacheEntityValue
-                (ExpectedRtCacheValue, cache.GetAllRefreshTokenCacheItems(requestContext));
+                (ExpectedRtCacheValue, cacheAdapter.GetAllRefreshTokenCacheItems(requestContext));
 
-            var rtCacheItem = cache.GetAllRefreshTokensForClient(requestContext).First();
+            var rtCacheItem = cacheAdapter.GetAllRefreshTokensForClient(requestContext).First();
             var key = rtCacheItem.GetKey();
 
             Assert.AreEqual(ExpectedRtCacheKey, key.ToString());
@@ -279,12 +280,12 @@ namespace Test.MSAL.NET.Unit
             Assert.AreEqual(ExpectedRtCacheKeyIosGeneric, key.GetiOSGenericKey());
         }
 
-        private void ValidateIdToken(TokenCache cache)
+        private void ValidateIdToken(ITokenCacheAdapter cacheAdapter)
         {
             ValidateCacheEntityValue
-                (ExpectedIdTokenCacheValue, cache.GetAllIdTokenCacheItems(requestContext));
+                (ExpectedIdTokenCacheValue, cacheAdapter.GetAllIdTokenCacheItems(requestContext));
 
-            var idTokenCacheItem = cache.GetAllIdTokensForClient(requestContext).First();
+            var idTokenCacheItem = cacheAdapter.GetAllIdTokensForClient(requestContext).First();
             var key = idTokenCacheItem.GetKey();
 
             Assert.AreEqual(ExpectedIdTokenCacheKey, key.ToString());
@@ -294,12 +295,12 @@ namespace Test.MSAL.NET.Unit
             Assert.AreEqual(ExpectedIdTokenCacheKeyIosGeneric, key.GetiOSGenericKey());
         }
 
-        private void ValidateAccount(TokenCache cache)
+        private void ValidateAccount(ITokenCacheAdapter cacheAdapter)
         {
             ValidateCacheEntityValue
-                (ExpectedAccountCacheValue, cache.GetAllAccountCacheItems(requestContext));
+                (ExpectedAccountCacheValue, cacheAdapter.GetAllAccountCacheItems(requestContext));
 
-            var accountCacheItem = cache.GetAllAccounts(requestContext).First();
+            var accountCacheItem = cacheAdapter.GetAllAccounts(requestContext).First();
             var key = accountCacheItem.GetKey();
 
             Assert.AreEqual(ExpectedAccountCacheKey, key.ToString());

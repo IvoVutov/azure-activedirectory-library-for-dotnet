@@ -115,15 +115,14 @@ namespace Test.MSAL.NET.Integration
                 UnifiedState = UnifiedStateStorage
             };
 
-            msal::Microsoft.Identity.Client.TokenCacheExtensions.DeserializeUnifiedAndAdalCache(args.TokenCache, cacheData);
+            args.TokenCache.DeserializeUnifiedAndAdalCache(cacheData);
         }
 
         private void MsalDoAfter(msal::Microsoft.Identity.Client.TokenCacheNotificationArgs args)
         {
             if (args.TokenCache.HasStateChanged)
             {
-                msal::Microsoft.Identity.Core.Cache.CacheData cacheData =
-                    msal::Microsoft.Identity.Client.TokenCacheExtensions.SerializeUnifiedAndAdalCache(args.TokenCache);
+                msal::Microsoft.Identity.Core.Cache.CacheData cacheData = args.TokenCache.SerializeUnifiedAndAdalCache();
 
                 AdalV3StateStorage = cacheData.AdalV3State;
                 UnifiedStateStorage = cacheData.UnifiedState;

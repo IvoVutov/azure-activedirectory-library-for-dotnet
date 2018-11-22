@@ -32,6 +32,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.CacheV2;
 using Microsoft.Identity.Client.Internal;
 using Microsoft.Identity.Client.Internal.Requests;
 using Microsoft.Identity.Core;
@@ -118,13 +119,21 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                         ResponseMessage = MockHelpers.CreateSuccessTokenResponseMessage()
                     });
 
+                var cacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                    new TelemetryManager(),
+                    aadInstanceDiscovery,
+                    _validatedAuthoritiesCache,
+                    MsalTestConstants.ClientId);
+
+                cacheAdapter.TokenCache = _cache;
+
                 var parameters = new AuthenticationRequestParameters
                 {
                     Authority = authority,
                     SliceParameters = "key1=value1%20with%20encoded%20space&key2=value2",
                     ClientId = MsalTestConstants.ClientId,
                     Scope = MsalTestConstants.Scope,
-                    TokenCache = _cache,
+                    TokenCacheAdapter = cacheAdapter,
                     RequestContext = new RequestContext(null, new MsalLogger(Guid.NewGuid(), null)),
                     RedirectUri = new Uri("some://uri"),
                     ExtraQueryParameters = "extra=qp"
@@ -193,12 +202,20 @@ namespace Test.MSAL.NET.Unit.RequestsTests
 
                 httpManager.AddSuccessTokenResponseMockHandlerForPost();
 
+                var cacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                    new TelemetryManager(),
+                    aadInstanceDiscovery,
+                    _validatedAuthoritiesCache,
+                    MsalTestConstants.ClientId);
+
+                cacheAdapter.TokenCache = _cache;
+
                 var parameters = new AuthenticationRequestParameters
                 {
                     Authority = authority,
                     ClientId = MsalTestConstants.ClientId,
                     Scope = MsalTestConstants.Scope,
-                    TokenCache = _cache,
+                    TokenCacheAdapter = cacheAdapter,
                     RequestContext = new RequestContext(null, new MsalLogger(Guid.NewGuid(), null)),
                     RedirectUri = new Uri("some://uri"),
                     ExtraQueryParameters = "extra=qp"
@@ -253,12 +270,20 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                     var aadInstanceDiscovery = new AadInstanceDiscovery(httpManager, _telemetryManager);
                     var authority = Authority.CreateAuthority(_validatedAuthoritiesCache, aadInstanceDiscovery, MsalTestConstants.AuthorityHomeTenant, false);
 
+                    var cacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                        new TelemetryManager(),
+                        aadInstanceDiscovery,
+                        _validatedAuthoritiesCache,
+                        MsalTestConstants.ClientId);
+
+                    cacheAdapter.TokenCache = null;
+
                     var parameters = new AuthenticationRequestParameters
                     {
                         Authority = authority,
                         ClientId = MsalTestConstants.ClientId,
                         Scope = MsalTestConstants.Scope,
-                        TokenCache = null,
+                        TokenCacheAdapter = cacheAdapter,
                         RequestContext = new RequestContext(null, new MsalLogger(Guid.NewGuid(), null)),
                         RedirectUri = new Uri("some://uri#fragment=not-so-good"),
                         ExtraQueryParameters = "extra=qp"
@@ -301,12 +326,20 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                         ResponseMessage = MockHelpers.CreateTooManyRequestsNonJsonResponse() // returns a non json response
                     });
 
+                var cacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                    new TelemetryManager(),
+                    aadInstanceDiscovery,
+                    _validatedAuthoritiesCache,
+                    MsalTestConstants.ClientId);
+
+                cacheAdapter.TokenCache = null;
+
                 var parameters = new AuthenticationRequestParameters
                 {
                     Authority = authority,
                     ClientId = MsalTestConstants.ClientId,
                     Scope = MsalTestConstants.Scope,
-                    TokenCache = null,
+                    TokenCacheAdapter = cacheAdapter,
                     RequestContext = new RequestContext(null, new MsalLogger(Guid.NewGuid(), null)),
                     RedirectUri = new Uri("some://uri"),
                 };
@@ -359,12 +392,20 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                         ResponseMessage = MockHelpers.CreateTooManyRequestsJsonResponse() // returns a non json response
                     });
 
+                var cacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                    new TelemetryManager(),
+                    aadInstanceDiscovery,
+                    _validatedAuthoritiesCache,
+                    MsalTestConstants.ClientId);
+
+                cacheAdapter.TokenCache = null;
+
                 var parameters = new AuthenticationRequestParameters
                 {
                     Authority = authority,
                     ClientId = MsalTestConstants.ClientId,
                     Scope = MsalTestConstants.Scope,
-                    TokenCache = null,
+                    TokenCacheAdapter = null,
                     RequestContext = new RequestContext(null, new MsalLogger(Guid.NewGuid(), null)),
                     RedirectUri = new Uri("some://uri"),
                 };
@@ -419,12 +460,20 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                         MsalTestConstants.AuthorityHomeTenant + "?error=" + OAuth2Error.LoginRequired)
                 };
 
+                var cacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                    new TelemetryManager(),
+                    aadInstanceDiscovery,
+                    _validatedAuthoritiesCache,
+                    MsalTestConstants.ClientId);
+
+                cacheAdapter.TokenCache = null;
+
                 var parameters = new AuthenticationRequestParameters
                 {
                     Authority = authority,
                     ClientId = MsalTestConstants.ClientId,
                     Scope = MsalTestConstants.Scope,
-                    TokenCache = null,
+                    TokenCacheAdapter = cacheAdapter,
                     RequestContext = new RequestContext(null, new MsalLogger(Guid.NewGuid(), null)),
                     RedirectUri = new Uri("some://uri"),
                     ExtraQueryParameters = "extra=qp"
@@ -498,12 +547,21 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                 var aadInstanceDiscovery = new AadInstanceDiscovery(httpManager, _telemetryManager);
 
                 var authority = Authority.CreateAuthority(_validatedAuthoritiesCache, aadInstanceDiscovery, MsalTestConstants.AuthorityHomeTenant, false);
+
+                var cacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                    new TelemetryManager(),
+                    aadInstanceDiscovery,
+                    _validatedAuthoritiesCache,
+                    MsalTestConstants.ClientId);
+
+                cacheAdapter.TokenCache = null;
+
                 var parameters = new AuthenticationRequestParameters
                 {
                     Authority = authority,
                     ClientId = MsalTestConstants.ClientId,
                     Scope = MsalTestConstants.Scope,
-                    TokenCache = null,
+                    TokenCacheAdapter = cacheAdapter,
                     RequestContext = new RequestContext(null, new MsalLogger(Guid.NewGuid(), null)),
                     RedirectUri = new Uri("some://uri"),
                     ExtraQueryParameters = "extra=qp&prompt=login"

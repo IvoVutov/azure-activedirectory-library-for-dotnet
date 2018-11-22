@@ -35,6 +35,7 @@ using Microsoft.Identity.Core.Instance;
 using Microsoft.Identity.Core.UI;
 using Microsoft.Identity.Core.Telemetry;
 using System.Threading;
+using Microsoft.Identity.Client.CacheV2;
 using Microsoft.Identity.Core.Http;
 
 namespace Microsoft.Identity.Client
@@ -133,8 +134,7 @@ namespace Microsoft.Identity.Client
             set
             {
                 keychainSecurityGroup = value;
-                UserTokenCache.TokenCacheAccessor.SetKeychainSecurityGroup(value);
-                UserTokenCache.LegacyCachePersistence.SetKeychainSecurityGroup(value);
+                UserTokenCacheAdapter.SetKeychainSecurityGroup(value);
             }
         }
 #endif
@@ -465,7 +465,7 @@ namespace Microsoft.Identity.Client
             UIParent parent, 
             ApiEvent.ApiIds apiId)
         {
-            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCache);
+            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCacheAdapter);
             requestParams.ExtraQueryParameters = extraQueryParameters;
 
             var handler = new InteractiveRequest(
@@ -490,7 +490,7 @@ namespace Microsoft.Identity.Client
         private async Task<AuthenticationResult> AcquireTokenForUserCommonAsync(Authority authority, IEnumerable<string> scopes,
             IEnumerable<string> extraScopesToConsent, IAccount user, UIBehavior behavior, string extraQueryParameters, UIParent parent, ApiEvent.ApiIds apiId)
         {
-            var requestParams = CreateRequestParameters(authority, scopes, user, UserTokenCache);
+            var requestParams = CreateRequestParameters(authority, scopes, user, UserTokenCacheAdapter);
             requestParams.ExtraQueryParameters = extraQueryParameters;
 
             var handler = new InteractiveRequest(
@@ -509,9 +509,9 @@ namespace Microsoft.Identity.Client
         }
 
         internal override AuthenticationRequestParameters CreateRequestParameters(Authority authority,
-            IEnumerable<string> scopes, IAccount user, TokenCache cache)
+            IEnumerable<string> scopes, IAccount user, ITokenCacheAdapter cacheAdapter)
         {
-            AuthenticationRequestParameters parameters = base.CreateRequestParameters(authority, scopes, user, cache);
+            AuthenticationRequestParameters parameters = base.CreateRequestParameters(authority, scopes, user, cacheAdapter);
             return parameters;
         }
 

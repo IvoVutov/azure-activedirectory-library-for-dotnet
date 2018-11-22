@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Identity.Client.CacheV2;
 using Microsoft.Identity.Core;
 using Microsoft.Identity.Core.Helpers;
 using Microsoft.Identity.Core.Instance;
@@ -45,7 +46,7 @@ namespace Microsoft.Identity.Client.Internal.Requests
 
         public bool ValidateAuthority { get; set; }
 
-        public TokenCache TokenCache { get; set; }
+        public ITokenCacheAdapter TokenCacheAdapter { get; set; }
 
         public bool IsExtendedLifeTimeEnabled { get; set; }
 

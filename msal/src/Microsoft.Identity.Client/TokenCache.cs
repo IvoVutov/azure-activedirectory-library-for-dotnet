@@ -30,13 +30,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client.CacheV2;
 using Microsoft.Identity.Client.Internal;
 using Microsoft.Identity.Client.Internal.Requests;
 
 using Microsoft.Identity.Core;
 using Microsoft.Identity.Core.Cache;
 using Microsoft.Identity.Core.Helpers;
-using Microsoft.Identity.Core.Http;
 using Microsoft.Identity.Core.Instance;
 using Microsoft.Identity.Core.OAuth2;
 using Microsoft.Identity.Core.Telemetry;
@@ -53,7 +53,7 @@ namespace Microsoft.Identity.Client
     /// token cache (in the case of applications using the client credential flows).
     /// See also <see cref="TokenCacheExtensions"/> which contains extension methods used to customize the cache serialization
     /// </summary>
-    public sealed class TokenCache
+    public sealed class TokenCache : ITokenCache
 #pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
     {
         internal const string NullPreferredUsernameDisplayLabel = "Missing from the token response";
@@ -1191,6 +1191,70 @@ namespace Microsoft.Identity.Client
                     OnAfterAccess(args);
                     HasStateChanged = false;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Serializes the entire token cache, in the unified cache format only
+        /// </summary>
+        /// <returns>array of bytes containing the serialized unified cache</returns>
+        public byte[] Serialize()
+        {
+            // reads the underlying in-memory dictionary and dumps out the content as a JSON
+            lock (LockObject)
+            {
+                return TokenCacheSerializeHelper.SerializeUnifiedCache(TokenCacheAccessor);
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the token cache from a serialization blob in the unified cache format
+        /// </summary>
+        /// <param name="unifiedState">Array of bytes containing serialized Msal cache data</param>
+        /// <remarks>
+        /// <paramref name="unifiedState"/>Is a Json blob containing access tokens, refresh tokens, id tokens and accounts information.
+        /// </remarks>
+        public void Deserialize(byte[] unifiedState)
+        {
+            lock (LockObject)
+            {
+                RequestContext requestContext = new RequestContext(null, new MsalLogger(Guid.Empty, null));
+                TokenCacheSerializeHelper.DeserializeUnifiedCache(TokenCacheAccessor, unifiedState, requestContext);
+            }
+        }
+
+        /// <summary>
+        /// Serializes the entire token cache in both the ADAL V3 and unified cache formats.
+        /// </summary>
+        /// <returns>Serialized token cache <see cref="CacheData"/></returns>
+        public CacheData SerializeUnifiedAndAdalCache()
+        {
+            // reads the underlying in-memory dictionary and dumps out the content as a JSON
+            lock (LockObject)
+            {
+                var serializedUnifiedCache = Serialize();
+                var serializeAdalCache = LegacyCachePersistence.LoadCache();
+
+                return new CacheData()
+                {
+                    AdalV3State = serializeAdalCache,
+                    UnifiedState = serializedUnifiedCache
+                };
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the token cache from a serialization blob in both format (ADAL V3 format, and unified cache format)
+        /// </summary>
+        /// <param name="cacheData">Array of bytes containing serialicache data</param>
+        public void DeserializeUnifiedAndAdalCache(CacheData cacheData)
+        {
+            lock (LockObject)
+            {
+                RequestContext requestContext = new RequestContext(null, new MsalLogger(Guid.Empty, null));
+                Deserialize(cacheData.UnifiedState);
+
+                LegacyCachePersistence.WriteCache(cacheData.AdalV3State);
             }
         }
     }

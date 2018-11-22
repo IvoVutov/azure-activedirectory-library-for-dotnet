@@ -34,6 +34,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.CacheV2;
 using Microsoft.Identity.Client.Features.DeviceCode;
 using Microsoft.Identity.Client.Internal;
 using Microsoft.Identity.Client.Internal.Requests;
@@ -299,12 +300,20 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                 AadInstanceDiscovery = aadInstanceDiscovery
             };
 
+            var cacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                new TelemetryManager(),
+                aadInstanceDiscovery,
+                _validatedAuthoritiesCache,
+                MsalTestConstants.ClientId);
+
+            cacheAdapter.TokenCache = _cache;
+
             var parameters = new AuthenticationRequestParameters()
             {
                 Authority = authority,
                 ClientId = MsalTestConstants.ClientId,
                 Scope = MsalTestConstants.Scope,
-                TokenCache = _cache,
+                TokenCacheAdapter = cacheAdapter,
                 RequestContext = new RequestContext(null, new MsalLogger(Guid.NewGuid(), null))
             };
 

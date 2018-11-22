@@ -34,6 +34,7 @@ using Microsoft.Identity.Client.Internal;
 using Microsoft.Identity.Core;
 using Microsoft.Identity.Core.Telemetry;
 using System.Threading;
+using Microsoft.Identity.Client.CacheV2;
 using Microsoft.Identity.Core.Http;
 
 namespace Microsoft.Identity.Client
@@ -75,7 +76,7 @@ namespace Microsoft.Identity.Client
         /// <seealso cref="ConfidentialClientApplication"/> which 
         /// enables app developers to specify the authority
         public ConfidentialClientApplication(string clientId, string redirectUri,
-            ClientCredential clientCredential, TokenCache userTokenCache, TokenCache appTokenCache)
+            ClientCredential clientCredential, ITokenCache userTokenCache, ITokenCache appTokenCache)
             : this(clientId, DefaultAuthority, redirectUri, clientCredential, userTokenCache, appTokenCache)
         {
         }
@@ -111,16 +112,23 @@ namespace Microsoft.Identity.Client
         /// <seealso cref="ConfidentialClientApplication"/> which 
         /// enables app developers to create a confidential client application requesting tokens with the default authority.
         public ConfidentialClientApplication(string clientId, string authority, string redirectUri,
-            ClientCredential clientCredential, TokenCache userTokenCache, TokenCache appTokenCache)
+            ClientCredential clientCredential, ITokenCache userTokenCache, ITokenCache appTokenCache)
             : this(null, null, clientId, authority, redirectUri, clientCredential, userTokenCache, appTokenCache)
         {
         }
 
         internal ConfidentialClientApplication(IHttpManager httpManager, ITelemetryManager telemetryManager, string clientId, string authority, string redirectUri,
-                                               ClientCredential clientCredential, TokenCache userTokenCache, TokenCache appTokenCache)
+                                               ClientCredential clientCredential, ITokenCache userTokenCache, ITokenCache appTokenCache)
             : base(clientId, authority, redirectUri, true, httpManager, telemetryManager)
         {
             ClientCredential = clientCredential;
+
+            AppTokenCacheAdapter = TokenCacheAdapterFactory.CreateTokenCacheAdapter(
+                telemetryManager,
+                AadInstanceDiscovery,
+                ValidatedAuthoritiesCache,
+                clientId);
+
             UserTokenCache = userTokenCache;
             AppTokenCache = appTokenCache;
         }
@@ -313,7 +321,7 @@ namespace Microsoft.Identity.Client
         {
             Authority authority = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, Authority, ValidateAuthority);
             var requestParameters =
-                CreateRequestParameters(authority, scopes, null, UserTokenCache);
+                CreateRequestParameters(authority, scopes, null, UserTokenCacheAdapter);
             requestParameters.ClientId = ClientId;
             requestParameters.ExtraQueryParameters = extraQueryParameters;
 
@@ -343,7 +351,7 @@ namespace Microsoft.Identity.Client
         {
             Authority authorityInstance = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, authority, ValidateAuthority);
             var requestParameters = CreateRequestParameters(authorityInstance, scopes, null,
-                UserTokenCache);
+                UserTokenCacheAdapter);
             requestParameters.RedirectUri = new Uri(redirectUri);
             requestParameters.ClientId = ClientId;
             requestParameters.ExtraQueryParameters = extraQueryParameters;
@@ -365,28 +373,19 @@ namespace Microsoft.Identity.Client
         }
 
         internal ClientCredential ClientCredential { get; }
+        internal ITokenCacheAdapter AppTokenCacheAdapter { get; }
 
-        private TokenCache _appTokenCache;
-        internal TokenCache AppTokenCache
+        internal ITokenCache AppTokenCache
         {
-            get => _appTokenCache;
-            private set
-            {
-                _appTokenCache = value;
-                if (_appTokenCache != null)
-                {
-                    _appTokenCache.ClientId = ClientId;
-                    _appTokenCache.TelemetryManager = TelemetryManager;
-                    _appTokenCache.AadInstanceDiscovery = AadInstanceDiscovery;
-                }
-            }
+            get => AppTokenCacheAdapter.TokenCache;
+            private set => AppTokenCacheAdapter.TokenCache = value;
         }
 
         private async Task<AuthenticationResult> AcquireTokenForClientCommonAsync(IEnumerable<string> scopes, bool forceRefresh, ApiEvent.ApiIds apiId, bool sendCertificate)
         {
             Authority authority = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, Authority, ValidateAuthority);
             AuthenticationRequestParameters parameters = CreateRequestParameters(authority, scopes, null,
-                AppTokenCache);
+                AppTokenCacheAdapter);
             parameters.IsClientCredentialRequest = true;
             parameters.SendCertificate = sendCertificate;
             var handler = new ClientCredentialRequest(
@@ -405,7 +404,7 @@ namespace Microsoft.Identity.Client
         private async Task<AuthenticationResult> AcquireTokenOnBehalfCommonAsync(Authority authority,
             IEnumerable<string> scopes, UserAssertion userAssertion, ApiEvent.ApiIds apiId, bool sendCertificate)
         {
-            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCache);
+            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCacheAdapter);
             requestParams.UserAssertion = userAssertion;
             requestParams.SendCertificate = sendCertificate;
             var handler = new OnBehalfOfRequest(
@@ -423,7 +422,7 @@ namespace Microsoft.Identity.Client
             IEnumerable<string> scopes, Uri redirectUri, ApiEvent.ApiIds apiId, bool sendCertificate)
         {
             Authority authority = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, Authority, ValidateAuthority);
-            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCache);
+            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCacheAdapter);
             requestParams.AuthorizationCode = authorizationCode;
             requestParams.RedirectUri = redirectUri;
             requestParams.SendCertificate = sendCertificate;
@@ -438,9 +437,10 @@ namespace Microsoft.Identity.Client
             return await handler.RunAsync(CancellationToken.None).ConfigureAwait(false);
         }
 
-        internal override AuthenticationRequestParameters CreateRequestParameters(Authority authority, IEnumerable<string> scopes, IAccount user, TokenCache cache)
+        internal override AuthenticationRequestParameters CreateRequestParameters(
+            Authority authority, IEnumerable<string> scopes, IAccount user, ITokenCacheAdapter cacheAdapter)
         {
-            AuthenticationRequestParameters parameters = base.CreateRequestParameters(authority, scopes, user, cache);
+            AuthenticationRequestParameters parameters = base.CreateRequestParameters(authority, scopes, user, cacheAdapter);
             parameters.ClientId = ClientId;
             parameters.ClientCredential = ClientCredential;
 

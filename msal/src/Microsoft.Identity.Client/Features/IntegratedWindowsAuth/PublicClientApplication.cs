@@ -78,7 +78,7 @@ namespace Microsoft.Identity.Client
         private async Task<AuthenticationResult> AcquireTokenByIWAAsync(IEnumerable<string> scopes, IntegratedWindowsAuthInput iwaInput)
         {
             Authority authority = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, Authority, ValidateAuthority);
-            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCache);
+            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCacheAdapter);
             var handler = new IntegratedWindowsAuthRequest(
                 HttpManager,
                 CryptographyManager,

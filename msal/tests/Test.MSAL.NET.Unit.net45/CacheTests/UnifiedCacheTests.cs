@@ -59,16 +59,19 @@ namespace Test.MSAL.NET.Unit
             {
                 httpManager.AddInstanceDiscoveryMockHandler();
 
+                var legacyCachePersistence = new TestLegacyCachePersistance();
+                var cache = new TokenCache
+                {
+                    LegacyCachePersistence = legacyCachePersistence
+                };
+
                 PublicClientApplication app = new PublicClientApplication(
                     httpManager,
                     null,
                     MsalTestConstants.ClientId,
                     ClientApplicationBase.DefaultAuthority)
                 {
-                    UserTokenCache =
-                    {
-                        LegacyCachePersistence = new TestLegacyCachePersistance()
-                    }
+                    UserTokenCache = cache
                 };
 
                 MsalMockHelpers.ConfigureMockWebUI(new AuthorizationResult(AuthorizationStatus.Success,
@@ -81,16 +84,16 @@ namespace Test.MSAL.NET.Unit
 
                 // make sure Msal stored RT in Adal cache
                 IDictionary<AdalTokenCacheKey, AdalResultWrapper> adalCacheDictionary =
-                    AdalCacheOperations.Deserialize(app.UserTokenCache.LegacyCachePersistence.LoadCache());
+                    AdalCacheOperations.Deserialize(legacyCachePersistence.LoadCache());
 
                 Assert.IsTrue(adalCacheDictionary.Count == 1);
 
                 var requestContext = new RequestContext(null, new MsalLogger(Guid.Empty, null));
                 var users =
-                    app.UserTokenCache.GetAccounts(MsalTestConstants.AuthorityCommonTenant, false, requestContext);
+                    app.UserTokenCacheAdapter.GetAccounts(MsalTestConstants.AuthorityCommonTenant, false, requestContext);
                 foreach (IAccount user in users)
                 {
-                    app.UserTokenCache.RemoveMsalAccount(user, requestContext);
+                    app.UserTokenCacheAdapter.RemoveMsalAccount(user, requestContext);
                 }
 
                 httpManager.AddMockHandler(
@@ -214,36 +217,39 @@ namespace Test.MSAL.NET.Unit
         {
             using (var httpManager = new MockHttpManager())
             {
+                var legacyCachePersistence = new TestLegacyCachePersistance();
+                var tokenCache = new TokenCache
+                {
+                    LegacyCachePersistence = new TestLegacyCachePersistance()
+                };
+
                 var app = new PublicClientApplication(
                     httpManager,
                     null,
                     MsalTestConstants.ClientId,
                     ClientApplicationBase.DefaultAuthority)
                 {
-                    UserTokenCache =
-                    {
-                        LegacyCachePersistence = new TestLegacyCachePersistance()
-                    }
+                    UserTokenCache = tokenCache
                 };
 
-                CreateAdalCache(app.UserTokenCache.LegacyCachePersistence, MsalTestConstants.Scope.ToString());
+                CreateAdalCache(legacyCachePersistence, MsalTestConstants.Scope.ToString());
 
                 Tuple<Dictionary<string, AdalUserInfo>, List<AdalUserInfo>> tuple =
                     CacheFallbackOperations.GetAllAdalUsersForMsal(
-                        app.UserTokenCache.LegacyCachePersistence,
+                        legacyCachePersistence,
                         MsalTestConstants.ClientId);
 
-                CreateAdalCache(app.UserTokenCache.LegacyCachePersistence, "user.read");
+                CreateAdalCache(legacyCachePersistence, "user.read");
 
                 Tuple<Dictionary<string, AdalUserInfo>, List<AdalUserInfo>> tuple2 =
                     CacheFallbackOperations.GetAllAdalUsersForMsal(
-                        app.UserTokenCache.LegacyCachePersistence,
+                        legacyCachePersistence,
                         MsalTestConstants.ClientId);
 
                 Assert.AreEqual(tuple.Item1.Keys.First(), tuple2.Item1.Keys.First());
 
-                app.UserTokenCache.TokenCacheAccessor.ClearAccessTokens();
-                app.UserTokenCache.TokenCacheAccessor.ClearRefreshTokens();
+                tokenCache.TokenCacheAccessor.ClearAccessTokens();
+                tokenCache.TokenCacheAccessor.ClearRefreshTokens();
             }
         }
 

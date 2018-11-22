@@ -70,6 +70,12 @@ namespace Test.MSAL.NET.Unit
             {
                 TestInitialize(httpManager);
 
+                var legacyCachePersistence = new TestLegacyCachePersistance();
+                var tokenCache = new TokenCache
+                {
+                    LegacyCachePersistence = legacyCachePersistence
+                };
+
                 PublicClientApplication app = new PublicClientApplication(
                     httpManager,
                     null,
@@ -79,10 +85,7 @@ namespace Test.MSAL.NET.Unit
                         "https://{0}/common",
                         MsalTestConstants.ProductionNotPrefEnvironmentAlias))
                 {
-                    UserTokenCache =
-                    {
-                        LegacyCachePersistence = new TestLegacyCachePersistance()
-                    }
+                    UserTokenCache = tokenCache
                 };
 
                 // mock for openId config request
@@ -111,7 +114,7 @@ namespace Test.MSAL.NET.Unit
 
                 // make sure that all cache entities are stored with "preferred_cache" environment
                 // (it is taken from metadata in instance discovery response)
-                ValidateCacheEntitiesEnvironment(app.UserTokenCache, MsalTestConstants.ProductionPrefCacheEnvironment);
+                ValidateCacheEntitiesEnvironment(tokenCache, MsalTestConstants.ProductionPrefCacheEnvironment);
 
                 // silent request targeting at, should return at from cache for any environment alias
                 foreach (var envAlias in MsalTestConstants.ProdEnvAliases)

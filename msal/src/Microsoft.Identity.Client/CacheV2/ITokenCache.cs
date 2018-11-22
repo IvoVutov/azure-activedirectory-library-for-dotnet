@@ -25,6 +25,8 @@
 // 
 // ------------------------------------------------------------------------------
 
+using System.Threading.Tasks;
+using Microsoft.Identity.Client.Internal.Requests;
 using Microsoft.Identity.Core.Cache;
 
 namespace Microsoft.Identity.Client.CacheV2
@@ -80,6 +82,6 @@ namespace Microsoft.Identity.Client.CacheV2
         /// 
         /// </summary>
         /// <param name="cacheData"></param>
-        void DeserializeUnifiedAndAdalCache(CacheData cacheData);
+        void DeserializeUnifiedAndAdalCache(CacheData cacheData);        
     }
 }
