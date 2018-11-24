@@ -39,6 +39,7 @@ using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Internal;
 using Microsoft.Identity.Core.Helpers;
 using Microsoft.Identity.Core.Instance;
+using Microsoft.Identity.Core.Telemetry;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Test.Microsoft.Identity.Core.Unit;
 using Test.Microsoft.Identity.Core.Unit.Mocks;
@@ -101,7 +102,7 @@ namespace Test.MSAL.NET.Unit
                 var clientCredential = new ClientCredential(clientAssertion);
                 var app = new ConfidentialClientApplication(
                     httpManager,
-                    null,
+                    new TelemetryManager(),
                     MsalTestConstants.ClientId,
                     ClientApplicationBase.DefaultAuthority,
                     MsalTestConstants.RedirectUri,
@@ -139,7 +140,7 @@ namespace Test.MSAL.NET.Unit
                 var clientCredential = new ClientCredential(clientAssertion);
                 var app = new ConfidentialClientApplication(
                     httpManager,
-                    null,
+                    new TelemetryManager(),
                     MsalTestConstants.ClientId,
                     ClientApplicationBase.DefaultAuthority,
                     MsalTestConstants.RedirectUri,
