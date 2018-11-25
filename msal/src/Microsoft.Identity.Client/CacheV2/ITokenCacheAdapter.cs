@@ -41,7 +41,12 @@ namespace Microsoft.Identity.Client.CacheV2
         IEnumerable<IAccount> GetAccounts(string authority, bool validateAuthority, RequestContext requestContext);
         void RemoveAccount(IAccount account, RequestContext requestContext);
 
-        Tuple<MsalAccessTokenCacheItem, MsalIdTokenCacheItem> SaveAccessAndRefreshToken(
+        bool TryReadCache(
+            AuthenticationRequestParameters authenticationRequestParameters,
+            out MsalTokenResponse msalTokenResponse,
+            out IAccount account);
+
+        AuthenticationResult SaveAccessAndRefreshToken(
             AuthenticationRequestParameters authenticationRequestParameters,
             MsalTokenResponse msalTokenResponse);
 

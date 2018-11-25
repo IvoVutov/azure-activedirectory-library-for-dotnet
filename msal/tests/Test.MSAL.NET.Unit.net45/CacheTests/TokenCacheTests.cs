@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.CacheV2;
 using Microsoft.Identity.Client.Internal;
 using Microsoft.Identity.Client.Internal.Requests;
 using Microsoft.Identity.Core;
@@ -41,7 +42,7 @@ using Microsoft.Identity.Core.Telemetry;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Test.Microsoft.Identity.Core.Unit;
 using Test.Microsoft.Identity.Core.Unit.Mocks;
-
+using Test.MSAL.NET.Unit.net45.CacheV2Tests;
 
 namespace Test.MSAL.NET.Unit.CacheTests
 {

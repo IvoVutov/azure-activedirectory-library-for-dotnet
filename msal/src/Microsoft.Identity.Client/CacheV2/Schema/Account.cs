@@ -25,6 +25,8 @@
 // 
 // ------------------------------------------------------------------------------
 
+using System;
+
 namespace Microsoft.Identity.Client.CacheV2.Schema
 {
     internal enum AuthorityType
@@ -35,7 +37,7 @@ namespace Microsoft.Identity.Client.CacheV2.Schema
         Other
     }
 
-    internal class Account
+    internal class Account : IAccount
     {
         public string HomeAccountId { get; set; }
         public string Environment { get; set; }
@@ -50,6 +52,27 @@ namespace Microsoft.Identity.Client.CacheV2.Schema
         public string AlternativeAccountId { get; set; }
         public string ClientInfo { get; set; }
         public string AdditionalFieldsJson { get; set; }
+
+        string IAccount.Username => Username;
+        string IAccount.Environment => Environment;
+
+        AccountId IAccount.HomeAccountId
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(HomeAccountId))
+                {
+                    return null;
+                }
+                var parts = HomeAccountId.Split(new char[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length != 2)
+                {
+                    return null;
+                }
+
+                return new AccountId(HomeAccountId, parts[0], parts[1]);
+            }
+        }
 
         public static Account CreateEmpty()
         {

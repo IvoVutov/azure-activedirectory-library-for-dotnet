@@ -66,17 +66,16 @@ namespace Microsoft.Identity.Client.Internal.Requests
             // for the user because the new incoming token may have updated claims
             // like mfa etc.
 
-            if (TokenCacheAdapter.TokenCache != null)
+            if (TokenCacheAdapter.TryReadCache(AuthenticationRequestParameters, out var msalTokenResponse, out var account))
             {
-                MsalAccessTokenCacheItem msalAccessTokenItem = await TokenCacheAdapter.FindAccessTokenAsync(AuthenticationRequestParameters).ConfigureAwait(false);
-                if (msalAccessTokenItem != null)
+                if (msalTokenResponse.HasAccessToken)
                 {
-                    return new AuthenticationResult(msalAccessTokenItem, null);
+                    return new AuthenticationResult(AuthenticationRequestParameters, msalTokenResponse, account);
                 }
             }
 
-            var msalTokenResponse = await SendTokenRequestAsync(GetBodyParameters(), cancellationToken).ConfigureAwait(false);
-            return CacheTokenResponseAndCreateAuthenticationResult(msalTokenResponse);
+            var msalTokenServerResponse = await SendTokenRequestAsync(GetBodyParameters(), cancellationToken).ConfigureAwait(false);
+            return CacheTokenResponseAndCreateAuthenticationResult(msalTokenServerResponse);
         }
 
         protected override void EnrichTelemetryApiEvent(ApiEvent apiEvent)

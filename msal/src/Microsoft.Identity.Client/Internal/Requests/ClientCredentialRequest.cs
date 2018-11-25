@@ -57,19 +57,20 @@ namespace Microsoft.Identity.Client.Internal.Requests
 
         internal override async Task<AuthenticationResult> ExecuteAsync(CancellationToken cancellationToken)
         {
-            if (!ForceRefresh && TokenCacheAdapter.TokenCache != null)
+            if (!ForceRefresh)
             {
-                var msalAccessTokenItem =
-                    await TokenCacheAdapter.FindAccessTokenAsync(AuthenticationRequestParameters).ConfigureAwait(false);
-                if (msalAccessTokenItem != null)
+                if (TokenCacheAdapter.TryReadCache(AuthenticationRequestParameters, out var msalTokenResponse, out var account))
                 {
-                    return new AuthenticationResult(msalAccessTokenItem, null);
+                    if (msalTokenResponse.HasAccessToken)
+                    {
+                        return new AuthenticationResult(AuthenticationRequestParameters, msalTokenResponse, account);
+                    }
                 }
             }
 
             await ResolveAuthorityEndpointsAsync().ConfigureAwait(false);
-            var msalTokenResponse = await SendTokenRequestAsync(GetBodyParameters(), cancellationToken).ConfigureAwait(false);
-            return CacheTokenResponseAndCreateAuthenticationResult(msalTokenResponse);
+            var msalTokenServerResponse = await SendTokenRequestAsync(GetBodyParameters(), cancellationToken).ConfigureAwait(false);
+            return CacheTokenResponseAndCreateAuthenticationResult(msalTokenServerResponse);
         }
 
         protected override void EnrichTelemetryApiEvent(ApiEvent apiEvent)

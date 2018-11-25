@@ -127,6 +127,7 @@ namespace Microsoft.Identity.Client
                 telemetryManager,
                 AadInstanceDiscovery,
                 ValidatedAuthoritiesCache,
+                StorageManager,
                 clientId);
 
             UserTokenCache = userTokenCache;

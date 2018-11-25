@@ -96,7 +96,7 @@ namespace Microsoft.Identity.Core.Cache
         internal string Authority => string.Format(CultureInfo.InvariantCulture, "https://{0}/{1}/", Environment, TenantId ?? "common");
         internal SortedSet<string> ScopeSet => ScopeHelper.ConvertStringToLowercaseSortedSet(NormalizedScopes);
 
-        internal DateTimeOffset ExpiresOn
+        internal DateTime ExpiresOn
         {
             get
             {
@@ -106,7 +106,7 @@ namespace Microsoft.Identity.Core.Cache
             }
         }
 
-        internal DateTimeOffset ExtendedExpiresOn
+        internal DateTime ExtendedExpiresOn
         {
             get
             {

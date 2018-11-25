@@ -35,6 +35,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.CacheV2;
+using Microsoft.Identity.Client.CacheV2.Impl;
+using Microsoft.Identity.Client.CacheV2.Impl.InMemory;
 using Microsoft.Identity.Client.Features.DeviceCode;
 using Microsoft.Identity.Client.Internal;
 using Microsoft.Identity.Client.Internal.Requests;
@@ -304,6 +306,7 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                 new TelemetryManager(),
                 aadInstanceDiscovery,
                 _validatedAuthoritiesCache,
+                TokenCacheAdapterFactory.CreateStorageManagerForTests(),
                 MsalTestConstants.ClientId);
 
             cacheAdapter.TokenCache = _cache;

@@ -31,36 +31,38 @@ using System.Linq;
 using Microsoft.Identity.Client.CacheV2.Impl;
 using Microsoft.Identity.Client.CacheV2.Impl.Utils;
 using Microsoft.Identity.Client.CacheV2.Schema;
+using Microsoft.Identity.Client.Internal.Requests;
+using Microsoft.Identity.Core.OAuth2;
 
 namespace Microsoft.Identity.Client.CacheV2
 {
     internal class CacheManager : ICacheManager
     {
-        private readonly AuthParameters _authParameters;
+        private readonly AuthenticationRequestParameters _authParameters;
         private readonly IStorageManager _storageManager;
 
-        public CacheManager(IStorageManager storageManager, AuthParameters authParameters)
+        public CacheManager(IStorageManager storageManager, AuthenticationRequestParameters authParameters)
         {
             _storageManager = storageManager;
             _authParameters = authParameters;
         }
 
-        public bool TryReadCache(out TokenResponse tokens, out Microsoft.Identity.Client.CacheV2.Schema.Account account)
+        public bool TryReadCache(out MsalTokenResponse msalTokenResponse, out IAccount account)
         {
-            tokens = null;
+            msalTokenResponse = null;
             account = null;
 
-            string homeAccountId = _authParameters.AccountId;
-            var authority = _authParameters.Authority;
+            string homeAccountId = _authParameters.Account.HomeAccountId.ToString();
+            var authority = new Uri(_authParameters.Authority.CanonicalAuthority);
             string environment = authority.GetEnvironment();
             string realm = authority.GetRealm();
             string clientId = _authParameters.ClientId;
-            string target = string.Join(" ", _authParameters.RequestedScopes);
+            string target = ScopeUtils.JoinScopes(_authParameters.Scope);
 
             if (string.IsNullOrWhiteSpace(homeAccountId) || string.IsNullOrWhiteSpace(environment) ||
                 string.IsNullOrWhiteSpace(realm) || string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(target))
             {
-                tokens = null;
+                msalTokenResponse = null;
                 account = null;
                 return false;
             }
@@ -189,14 +191,16 @@ namespace Microsoft.Identity.Client.CacheV2
                 }
             }
 
-            tokens = new TokenResponse(idTokenJwt, accessToken, refreshToken);
+            msalTokenResponse = new TokenResponse(idTokenJwt, accessToken, refreshToken).ToMsalTokenResponse();
             return true;
         }
 
-        public Microsoft.Identity.Client.CacheV2.Schema.Account CacheTokenResponse(TokenResponse tokenResponse)
+        public IAccount CacheTokenResponse(MsalTokenResponse msalTokenResponse)
         {
+            var tokenResponse = new TokenResponse(msalTokenResponse);
+
             string homeAccountId = GetHomeAccountId(tokenResponse);
-            var authority = _authParameters.Authority;
+            var authority = new Uri(_authParameters.Authority.CanonicalAuthority);
             string environment = authority.GetEnvironment();
             string realm = authority.GetRealm();
             string clientId = _authParameters.ClientId;
@@ -298,8 +302,9 @@ namespace Microsoft.Identity.Client.CacheV2
 
         public void DeleteCachedRefreshToken()
         {
-            string homeAccountId = _authParameters.AccountId;
-            string environment = _authParameters.Authority.GetEnvironment();
+            string homeAccountId = _authParameters.Account.HomeAccountId.ToString();
+            var authority = new Uri(_authParameters.Authority.CanonicalAuthority);
+            string environment = authority.GetEnvironment();
             string clientId = _authParameters.ClientId;
 
             if (string.IsNullOrWhiteSpace(homeAccountId) || string.IsNullOrWhiteSpace(environment) ||
@@ -352,7 +357,7 @@ namespace Microsoft.Identity.Client.CacheV2
             }
         }
 
-        public static string GetLocalAccountId(Microsoft.Identity.Client.CacheV2.Impl.IdToken idTokenJwt)
+        internal static string GetLocalAccountId(Microsoft.Identity.Client.CacheV2.Impl.IdToken idTokenJwt)
         {
             string localAccountId = idTokenJwt.Oid;
             if (string.IsNullOrWhiteSpace(localAccountId))
@@ -363,9 +368,11 @@ namespace Microsoft.Identity.Client.CacheV2
             return localAccountId;
         }
 
-        public AuthorityType GetAuthorityType()
+        internal AuthorityType GetAuthorityType()
         {
-            string[] pathSegments = _authParameters.Authority.GetPath().Split('/');
+            var authority = new Uri(_authParameters.Authority.CanonicalAuthority);
+
+            string[] pathSegments = authority.GetPath().Split('/');
             if (pathSegments.Count() < 2)
             {
                 return AuthorityType.MsSts;
@@ -376,7 +383,7 @@ namespace Microsoft.Identity.Client.CacheV2
                        : AuthorityType.MsSts;
         }
 
-        public static string GetHomeAccountId(TokenResponse tokenResponse)
+        internal static string GetHomeAccountId(TokenResponse tokenResponse)
         {
             if (!string.IsNullOrWhiteSpace(tokenResponse.Uid) && !string.IsNullOrWhiteSpace(tokenResponse.Utid))
             {
@@ -399,7 +406,7 @@ namespace Microsoft.Identity.Client.CacheV2
             return idToken.Subject;
         }
 
-        public static bool IsAccessTokenValid(Credential accessToken)
+        internal static bool IsAccessTokenValid(Credential accessToken)
         {
             long now = TimeUtils.GetSecondsFromEpochNow();
 

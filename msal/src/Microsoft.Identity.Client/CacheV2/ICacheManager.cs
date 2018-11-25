@@ -25,14 +25,14 @@
 // 
 // ------------------------------------------------------------------------------
 
-using Microsoft.Identity.Client.CacheV2.Impl;
+using Microsoft.Identity.Core.OAuth2;
 
 namespace Microsoft.Identity.Client.CacheV2
 {
     internal interface ICacheManager
     {
-        bool TryReadCache(out TokenResponse tokens, out Microsoft.Identity.Client.CacheV2.Schema.Account account);
-        Microsoft.Identity.Client.CacheV2.Schema.Account CacheTokenResponse(TokenResponse tokenResponse);
+        bool TryReadCache(out MsalTokenResponse msalTokenResponse, out IAccount account);
+        IAccount CacheTokenResponse(MsalTokenResponse tokenResponse);
         void DeleteCachedRefreshToken();
     }
 }

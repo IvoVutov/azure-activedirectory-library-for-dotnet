@@ -159,8 +159,8 @@ namespace Test.MSAL.NET.Unit
                 MsalTestConstants.ClientId,
                 MsalTestConstants.RedirectUri,
                 new ClientCredential(MsalTestConstants.ClientSecret),
-                new TokenCache(),
-                new TokenCache());
+                TokenCacheAdapterFactory.CreateTokenCache(),
+                TokenCacheAdapterFactory.CreateTokenCache());
             Assert.IsNotNull(app);
             Assert.IsNotNull(app.UserTokenCache);
             Assert.IsNotNull(app.AppTokenCache);
@@ -179,8 +179,8 @@ namespace Test.MSAL.NET.Unit
                 MsalTestConstants.AuthorityGuestTenant,
                 MsalTestConstants.RedirectUri,
                 new ClientCredential("secret"),
-                new TokenCache(),
-                new TokenCache());
+                TokenCacheAdapterFactory.CreateTokenCache(),
+                TokenCacheAdapterFactory.CreateTokenCache());
             Assert.AreEqual(MsalTestConstants.AuthorityGuestTenant, app.Authority);
         }
 
@@ -424,8 +424,8 @@ namespace Test.MSAL.NET.Unit
                     ClientApplicationBase.DefaultAuthority,
                     MsalTestConstants.RedirectUri,
                     new ClientCredential(MsalTestConstants.ClientSecret),
-                    new TokenCache(),
-                    new TokenCache())
+                    TokenCacheAdapterFactory.CreateTokenCache(),
+                    TokenCacheAdapterFactory.CreateTokenCache())
                 {
                     ValidateAuthority = false
                 };
@@ -459,8 +459,8 @@ namespace Test.MSAL.NET.Unit
                     ClientApplicationBase.DefaultAuthority,
                     MsalTestConstants.RedirectUri,
                     new ClientCredential(MsalTestConstants.ClientSecret),
-                    new TokenCache(),
-                    new TokenCache())
+                    TokenCacheAdapterFactory.CreateTokenCache(),
+                    TokenCacheAdapterFactory.CreateTokenCache())
                 {
                     ValidateAuthority = false
                 };
@@ -507,8 +507,8 @@ namespace Test.MSAL.NET.Unit
                     ClientApplicationBase.DefaultAuthority,
                     MsalTestConstants.RedirectUri,
                     new ClientCredential(MsalTestConstants.ClientSecret),
-                    new TokenCache(),
-                    new TokenCache())
+                    TokenCacheAdapterFactory.CreateTokenCache(),
+                    TokenCacheAdapterFactory.CreateTokenCache())
                 {
                     ValidateAuthority = false
                 };
@@ -550,8 +550,8 @@ namespace Test.MSAL.NET.Unit
                     MsalTestConstants.AuthorityGuestTenant,
                     MsalTestConstants.RedirectUri,
                     new ClientCredential(MsalTestConstants.ClientSecret),
-                    new TokenCache(),
-                    new TokenCache())
+                    TokenCacheAdapterFactory.CreateTokenCache(),
+                    TokenCacheAdapterFactory.CreateTokenCache())
                 {
                     ValidateAuthority = false
                 };
@@ -614,8 +614,8 @@ namespace Test.MSAL.NET.Unit
                     ClientApplicationBase.DefaultAuthority,
                     MsalTestConstants.RedirectUri,
                     new ClientCredential(MsalTestConstants.ClientSecret),
-                    new TokenCache(),
-                    new TokenCache())
+                    TokenCacheAdapterFactory.CreateTokenCache(),
+                    TokenCacheAdapterFactory.CreateTokenCache())
                 {
                     ValidateAuthority = false
                 };

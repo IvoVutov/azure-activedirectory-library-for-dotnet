@@ -46,7 +46,7 @@ namespace Test.Microsoft.Identity.Core.Unit.Mocks
                 "Bearer",
                 CoreTestConstants.Scope.AsSingleString(),
                 CoreTestConstants.Utid,
-                "",
+                "the_secret",  // todo: this was working in previous tests with empty secret.  were we just not validating it?
                 new DateTimeOffset(DateTime.UtcNow + TimeSpan.FromSeconds(ValidExpiresIn)),
                 new DateTimeOffset(DateTime.UtcNow + TimeSpan.FromSeconds(ValidExtendedExpiresIn)),
                 MockHelpers.CreateClientInfo());
@@ -62,7 +62,7 @@ namespace Test.Microsoft.Identity.Core.Unit.Mocks
                 "Bearer",
                 CoreTestConstants.Scope.AsSingleString(),
                 CoreTestConstants.Utid,
-                "",
+                "the_secret", // todo: this was working in previous tests with empty secret.  were we just not validating it?
                 new DateTimeOffset(DateTime.UtcNow + TimeSpan.FromSeconds(ValidExpiresIn)),
                 new DateTimeOffset(DateTime.UtcNow + TimeSpan.FromSeconds(ValidExtendedExpiresIn)),
                 MockHelpers.CreateClientInfo());
@@ -89,7 +89,7 @@ namespace Test.Microsoft.Identity.Core.Unit.Mocks
                 "Bearer",
                 CoreTestConstants.ScopeForAnotherResource.AsSingleString(),
                 CoreTestConstants.Utid,
-                "",
+                "another_secret",  // todo: this was working in previous tests with empty secret.  were we just not validating it?
                 new DateTimeOffset(DateTime.UtcNow + TimeSpan.FromSeconds(ValidExpiresIn)),
                 new DateTimeOffset(DateTime.UtcNow + TimeSpan.FromSeconds(ValidExtendedExpiresIn)),
                 MockHelpers.CreateClientInfo());

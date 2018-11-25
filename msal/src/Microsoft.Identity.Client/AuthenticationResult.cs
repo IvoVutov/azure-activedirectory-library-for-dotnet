@@ -27,7 +27,11 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Identity.Client.CacheV2.Impl;
+using Microsoft.Identity.Client.CacheV2.Impl.Utils;
+using Microsoft.Identity.Client.Internal.Requests;
 using Microsoft.Identity.Core.Cache;
+using Microsoft.Identity.Core.OAuth2;
 
 namespace Microsoft.Identity.Client
 {
@@ -67,6 +71,34 @@ namespace Microsoft.Identity.Client
             Account = account;
             IdToken = idToken;
             Scopes = scopes;
+        }
+
+        internal AuthenticationResult(AuthenticationRequestParameters authenticationRequestParameters, MsalTokenResponse msalTokenResponse, IAccount account = null)
+        {
+            AccessToken = msalTokenResponse.AccessToken;
+            ExpiresOn = msalTokenResponse.AccessTokenExpiresOn;
+            ExtendedExpiresOn = msalTokenResponse.AccessTokenExtendedExpiresOn;
+            Scopes = ScopeUtils.SplitScopes(msalTokenResponse.Scope);
+            IsExtendedLifeTimeToken = false;  // TODO(mzuber): fix this
+
+            if (account == null)
+            {
+                if (!string.IsNullOrWhiteSpace(msalTokenResponse.IdToken))
+                {
+                    var idToken = new IdToken(msalTokenResponse.IdToken);
+                    IdToken = idToken.Raw;
+                    TenantId = idToken.TenantId;
+                    UniqueId = idToken.Oid;
+                    var homeAccountId = new AccountId($"{idToken.Oid}.{idToken.TenantId}", idToken.Oid, idToken.TenantId);
+
+                    // TODO(mzuber): where to get environment for here?
+                    Account = new Account(homeAccountId.Identifier, idToken.Upn, authenticationRequestParameters.Authority.Host);
+                }
+            }
+            else
+            {
+                Account = account;
+            }
         }
 
         internal AuthenticationResult()

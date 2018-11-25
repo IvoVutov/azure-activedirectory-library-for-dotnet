@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client.CacheV2.Impl.Utils;
 using Microsoft.Identity.Client.Internal.Requests;
 using Microsoft.Identity.Core;
 using Microsoft.Identity.Core.Cache;
@@ -107,17 +108,68 @@ namespace Microsoft.Identity.Client.CacheV2
             }
         }
 
-        public Tuple<MsalAccessTokenCacheItem, MsalIdTokenCacheItem> SaveAccessAndRefreshToken(
+        /// <inheritdoc />
+        public bool TryReadCache(
+            AuthenticationRequestParameters authenticationRequestParameters,
+            out MsalTokenResponse msalTokenResponse,
+            out IAccount account)
+        {
+            msalTokenResponse = null;
+            account = null;
+
+            MsalAccessTokenCacheItem atItem = FindAccessTokenAsync(authenticationRequestParameters).ConfigureAwait(false).GetAwaiter().GetResult();
+            MsalRefreshTokenCacheItem rtItem = FindRefreshTokenAsync(authenticationRequestParameters).ConfigureAwait(false).GetAwaiter().GetResult();
+            
+            if (atItem == null && rtItem == null)
+            {
+                return false;
+            }
+
+            var tokenResponse = new MsalTokenResponse();
+            if (atItem != null)
+            {
+                tokenResponse.AccessToken = atItem.Secret;
+                tokenResponse.ExpiresIn = Convert.ToInt64(DateTime.UtcNow.Subtract(atItem.ExpiresOn).TotalSeconds);
+                tokenResponse.ExtendedExpiresIn = Convert.ToInt64(DateTime.UtcNow.Subtract(atItem.ExtendedExpiresOn).TotalSeconds);
+                tokenResponse.Scope = ScopeUtils.JoinScopes(atItem.ScopeSet);
+
+                var msalIdTokenCacheItem = GetIdTokenCacheItem(new MsalIdTokenCacheKey(atItem.Environment, atItem.TenantId, atItem.HomeAccountId, atItem.ClientId), null);
+                tokenResponse.IdToken = msalIdTokenCacheItem.Secret;
+
+                account = new Account(msalIdTokenCacheItem.HomeAccountId, msalIdTokenCacheItem.IdToken.PreferredUsername, msalIdTokenCacheItem.Environment);
+            }
+
+            if (rtItem != null)
+            {
+                tokenResponse.RefreshToken = rtItem.Secret;
+            }
+
+            msalTokenResponse = tokenResponse;
+            return true;
+        }
+
+        public AuthenticationResult SaveAccessAndRefreshToken(
             AuthenticationRequestParameters authenticationRequestParameters,
             MsalTokenResponse msalTokenResponse)
         {
             lock (_lockObj)
             {
-                return _tokenCache.SaveAccessAndRefreshToken(
-                    _validatedAuthoritiesCache,
-                    _aadInstanceDiscovery,
-                    authenticationRequestParameters,
-                    msalTokenResponse);
+                if (TokenCache == null)
+                {
+                    return new AuthenticationResult(authenticationRequestParameters, msalTokenResponse);
+                }
+                else
+                {
+                    authenticationRequestParameters.RequestContext.Logger.Info("Saving Token Response to cache..");
+
+                    var tuple = _tokenCache.SaveAccessAndRefreshToken(
+                        _validatedAuthoritiesCache,
+                        _aadInstanceDiscovery,
+                        authenticationRequestParameters,
+                        msalTokenResponse);
+
+                    return new AuthenticationResult(tuple.Item1, tuple.Item2);
+                }
             }
         }
 

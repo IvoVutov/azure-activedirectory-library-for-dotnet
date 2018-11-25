@@ -750,11 +750,7 @@ namespace Test.MSAL.NET.Unit
 
                 var aadInstanceDiscovery = new AadInstanceDiscovery(httpManager, new TelemetryManager());
 
-                _cache = new TokenCache()
-                {
-                    ClientId = MsalTestConstants.ClientId,
-                    AadInstanceDiscovery = aadInstanceDiscovery
-                };
+                _cache = new TokenCache();
 
                 app.UserTokenCache = _cache;
                 TokenCacheHelper.PopulateCache(_cache.TokenCacheAccessor);

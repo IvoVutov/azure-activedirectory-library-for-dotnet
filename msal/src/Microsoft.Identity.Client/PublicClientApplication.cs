@@ -92,10 +92,7 @@ namespace Microsoft.Identity.Client
         public PublicClientApplication(string clientId, string authority)
             : this(null, null, clientId, authority)
         {
-            UserTokenCache = new TokenCache()
-            {
-                ClientId = clientId
-            };
+            UserTokenCache = TokenCacheAdapterFactory.CreateTokenCache();
         }
 
         internal PublicClientApplication(IHttpManager httpManager, ITelemetryManager telemetryManager, string clientId, string authority)
@@ -107,10 +104,7 @@ namespace Microsoft.Identity.Client
                 httpManager,
                 telemetryManager)
         {
-            UserTokenCache = new TokenCache()
-            {
-                ClientId = clientId
-            };
+            UserTokenCache = TokenCacheAdapterFactory.CreateTokenCache();
         }
 
         // netcoreapp does not support UI at the moment and all the Acquire* methods use UI;

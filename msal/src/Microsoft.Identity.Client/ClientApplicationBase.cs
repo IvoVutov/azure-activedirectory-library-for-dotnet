@@ -40,6 +40,8 @@ using System.Threading;
 using Microsoft.Identity.Core.Http;
 using Microsoft.Identity.Core.WsTrust;
 using Microsoft.Identity.Client.CacheV2;
+using Microsoft.Identity.Client.CacheV2.Impl;
+using Microsoft.Identity.Client.CacheV2.Impl.InMemory;
 
 namespace Microsoft.Identity.Client
 {
@@ -70,6 +72,7 @@ namespace Microsoft.Identity.Client
         internal IValidatedAuthoritiesCache ValidatedAuthoritiesCache { get; }
         internal IAadInstanceDiscovery AadInstanceDiscovery { get; }
         internal ITokenCacheAdapter UserTokenCacheAdapter { get; }
+        internal IStorageManager StorageManager { get; }
 
         internal ITelemetryReceiver TelemetryReceiver
         {
@@ -110,6 +113,13 @@ namespace Microsoft.Identity.Client
             ValidatedAuthoritiesCache = new ValidatedAuthoritiesCache(false);
             AadInstanceDiscovery = new AadInstanceDiscovery(HttpManager, TelemetryManager, false);
 
+            // todo: this needs to be factoried/configured so user can determine if they want in-memory or on-device persistence...
+            var storageWorker = new PathStorageWorker(new InMemoryCachePathStorage(), new FileSystemCredentialPathManager());
+
+            StorageManager = new StorageManager(
+                storageWorker,
+                new AdalLegacyCacheManager(PlatformProxyFactory.GetPlatformProxy().CreateLegacyCachePersistence()));
+
             ClientId = clientId;
             Authority authorityInstance = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, authority, validateAuthority);
             Authority = authorityInstance.CanonicalAuthority;
@@ -120,6 +130,7 @@ namespace Microsoft.Identity.Client
                 TelemetryManager,
                 AadInstanceDiscovery,
                 ValidatedAuthoritiesCache,
+                StorageManager,
                 clientId);
 
             RequestContext requestContext = new RequestContext(ClientId, new MsalLogger(Guid.Empty, null));

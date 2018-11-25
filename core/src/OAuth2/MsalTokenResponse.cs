@@ -92,7 +92,13 @@ namespace Microsoft.Identity.Core.OAuth2
             }
         }
 
-        public DateTimeOffset AccessTokenExpiresOn { get; private set; }
-        public DateTimeOffset AccessTokenExtendedExpiresOn { get; private set; }
+        //public DateTimeOffset AccessTokenExpiresOn { get; private set; }
+        //public DateTimeOffset AccessTokenExtendedExpiresOn { get; private set; }
+
+        public DateTime AccessTokenExpiresOn { get; private set; }
+        public DateTime AccessTokenExtendedExpiresOn { get; private set; }
+
+        public bool HasAccessToken => !string.IsNullOrWhiteSpace(AccessToken);
+        public bool HasRefreshToken => !string.IsNullOrWhiteSpace(RefreshToken);
     }
 }

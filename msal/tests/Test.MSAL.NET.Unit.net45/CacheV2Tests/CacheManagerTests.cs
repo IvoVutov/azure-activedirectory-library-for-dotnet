@@ -30,9 +30,12 @@ using Microsoft.Identity.Client.CacheV2;
 using Microsoft.Identity.Client.CacheV2.Impl;
 using Microsoft.Identity.Client.CacheV2.Impl.Utils;
 using Microsoft.Identity.Client.CacheV2.Schema;
+using Microsoft.Identity.Client.Internal.Requests;
 using Microsoft.Identity.Core.Helpers;
+using Microsoft.Identity.Core.Instance;
 using Microsoft.Identity.Json.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using AuthorityType = Microsoft.Identity.Client.CacheV2.Schema.AuthorityType;
 
 namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
 {
@@ -76,8 +79,11 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
 
         private AuthorityType TestGetAuthorityType(string authority)
         {
-            var authParameters = new AuthParameters();
-            authParameters.Authority = new Uri(authority);
+            var authParameters = new AuthenticationRequestParameters
+            {
+                // todo(mzuber): this is going to be wonky probably...
+                Authority = Authority.CreateAuthority(null, null, authority, false)
+            };
             var cacheManager = new CacheManager(null, authParameters);
             return cacheManager.GetAuthorityType();
         }

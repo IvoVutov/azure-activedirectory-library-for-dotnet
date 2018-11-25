@@ -25,6 +25,9 @@
 // 
 // ------------------------------------------------------------------------------
 
+using Microsoft.Identity.Client.CacheV2.Impl;
+using Microsoft.Identity.Client.CacheV2.Impl.InMemory;
+using Microsoft.Identity.Core;
 using Microsoft.Identity.Core.Instance;
 using Microsoft.Identity.Core.Telemetry;
 
@@ -32,13 +35,43 @@ namespace Microsoft.Identity.Client.CacheV2
 {
     internal static class TokenCacheAdapterFactory
     {
+        private static bool UsingV1 { get; set; } = true;
+
         public static ITokenCacheAdapter CreateTokenCacheAdapter(
             ITelemetryManager telemetryManager,
             IAadInstanceDiscovery aadInstanceDiscovery,
             IValidatedAuthoritiesCache validatedAuthoritiesCache,
+            IStorageManager storageManager,
             string clientId)
         {
-            return new V1TokenCacheAdapter(telemetryManager, aadInstanceDiscovery, validatedAuthoritiesCache, clientId);
+            if (UsingV1)
+            {
+                return new V1TokenCacheAdapter(telemetryManager, aadInstanceDiscovery, validatedAuthoritiesCache, clientId);
+            }
+            else
+            {
+                return new V2TokenCacheAdapter(storageManager);
+            }
+        }
+
+        public static ITokenCache CreateTokenCache()
+        {
+            if (UsingV1)
+            {
+                return new TokenCache();
+            }
+            else
+            {
+                return new TokenCacheV2();
+            }
+        }
+
+        public static IStorageManager CreateStorageManagerForTests()
+        {
+            var storageManager = new StorageManager(
+                new PathStorageWorker(new InMemoryCachePathStorage(), new FileSystemCredentialPathManager()),
+                new AdalLegacyCacheManager(PlatformProxyFactory.GetPlatformProxy().CreateLegacyCachePersistence()));
+            return storageManager;
         }
     }
 }

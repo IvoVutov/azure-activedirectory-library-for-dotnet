@@ -213,6 +213,20 @@ namespace Microsoft.Identity.Client.Internal.Requests
 
         protected AuthenticationResult CacheTokenResponseAndCreateAuthenticationResult(MsalTokenResponse msalTokenResponse)
         {
+            ValidateReturnedClientInfo(msalTokenResponse);
+
+            IdToken idToken = IdToken.Parse(msalTokenResponse.IdToken);
+
+            AuthenticationRequestParameters.TenantUpdatedCanonicalAuthority = Authority.UpdateTenantId(
+                AuthenticationRequestParameters.Authority.CanonicalAuthority, idToken?.TenantId);
+
+            return TokenCacheAdapter.SaveAccessAndRefreshToken(
+                AuthenticationRequestParameters,
+                msalTokenResponse);
+        }
+
+        private void ValidateReturnedClientInfo(MsalTokenResponse msalTokenResponse)
+        {
             // developer passed in user object.
             AuthenticationRequestParameters.RequestContext.Logger.Info("checking client info returned from the server..");
 
@@ -220,22 +234,27 @@ namespace Microsoft.Identity.Client.Internal.Requests
 
             if (!AuthenticationRequestParameters.IsClientCredentialRequest)
             {
-                //client_info is not returned from client credential flows because there is no user present.
+                // client_info is not returned from client credential flows because there is no user present.
                 fromServer = ClientInfo.CreateFromJson(msalTokenResponse.ClientInfo);
             }
 
-            if (fromServer!= null && AuthenticationRequestParameters?.Account?.HomeAccountId != null)
+            if (fromServer != null && AuthenticationRequestParameters?.Account?.HomeAccountId != null)
             {
-                if (!fromServer.UniqueObjectIdentifier.Equals(AuthenticationRequestParameters.Account.HomeAccountId.ObjectId, StringComparison.OrdinalIgnoreCase) ||
-                    !fromServer.UniqueTenantIdentifier.Equals(AuthenticationRequestParameters.Account.HomeAccountId.TenantId, StringComparison.OrdinalIgnoreCase))
+                if (!fromServer.UniqueObjectIdentifier.Equals(
+                        AuthenticationRequestParameters.Account.HomeAccountId.ObjectId,
+                        StringComparison.OrdinalIgnoreCase) || !fromServer.UniqueTenantIdentifier.Equals(
+                        AuthenticationRequestParameters
+                            .Account.HomeAccountId.TenantId,
+                        StringComparison.OrdinalIgnoreCase))
                 {
-                    AuthenticationRequestParameters.RequestContext.Logger.Error("Returned user identifiers do not match the sent user identifier");
+                    AuthenticationRequestParameters.RequestContext.Logger.Error(
+                        "Returned user identifiers do not match the sent user identifier");
 
                     AuthenticationRequestParameters.RequestContext.Logger.ErrorPii(
                         string.Format(
                             CultureInfo.InvariantCulture,
                             "Returned user identifiers (uid:{0} utid:{1}) does not match the sent user identifier (uid:{2} utid:{3})",
-                            fromServer.UniqueObjectIdentifier, 
+                            fromServer.UniqueObjectIdentifier,
                             fromServer.UniqueTenantIdentifier,
                             AuthenticationRequestParameters.Account.HomeAccountId.ObjectId,
                             AuthenticationRequestParameters.Account.HomeAccountId.TenantId),
@@ -243,36 +262,6 @@ namespace Microsoft.Identity.Client.Internal.Requests
 
                     throw new MsalClientException(MsalError.UserMismatch, MsalErrorMessage.UserMismatchSaveToken);
                 }
-            }
-
-            IdToken idToken = IdToken.Parse(msalTokenResponse.IdToken);
-
-            AuthenticationRequestParameters.TenantUpdatedCanonicalAuthority = Authority.UpdateTenantId(
-                AuthenticationRequestParameters.Authority.CanonicalAuthority, idToken?.TenantId);
-
-            if (TokenCacheAdapter.TokenCache != null)
-            {
-                AuthenticationRequestParameters.RequestContext.Logger.Info("Saving Token Response to cache..");
-
-                var tuple = TokenCacheAdapter.SaveAccessAndRefreshToken(
-                    AuthenticationRequestParameters,
-                    msalTokenResponse);
-
-                return new AuthenticationResult(tuple.Item1, tuple.Item2);
-            }
-            else
-            {
-                return new AuthenticationResult(
-                    new MsalAccessTokenCacheItem(
-                        AuthenticationRequestParameters.Authority.Host,
-                        AuthenticationRequestParameters.ClientId, 
-                        msalTokenResponse,
-                        idToken?.TenantId),
-                    new MsalIdTokenCacheItem(
-                        AuthenticationRequestParameters.Authority.Host,
-                        AuthenticationRequestParameters.ClientId, 
-                        msalTokenResponse, 
-                        idToken?.TenantId));
             }
         }
 

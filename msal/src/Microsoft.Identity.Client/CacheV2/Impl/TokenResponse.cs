@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Identity.Client.CacheV2.Impl.Utils;
 using Microsoft.Identity.Client.CacheV2.Schema;
+using Microsoft.Identity.Core.OAuth2;
 using Microsoft.Identity.Json.Linq;
 
 namespace Microsoft.Identity.Client.CacheV2.Impl
@@ -53,6 +54,32 @@ namespace Microsoft.Identity.Client.CacheV2.Impl
             {
                 RefreshToken = refreshToken.Secret;
             }
+        }
+
+        public MsalTokenResponse ToMsalTokenResponse()
+        {
+            return new MsalTokenResponse
+            {
+                AccessToken = AccessToken,
+                ExpiresIn = Convert.ToInt64(DateTime.UtcNow.Subtract(ExpiresOn).TotalSeconds),
+                ExtendedExpiresIn = Convert.ToInt64(DateTime.UtcNow.Subtract(ExtendedExpiresOn).TotalSeconds),
+                Claims = string.Empty,
+                ClientInfo = RawClientInfo,
+                IdToken = IdToken.ToString(),
+                RefreshToken = RefreshToken,
+                Scope = ScopeUtils.JoinScopes(GrantedScopes),
+                TokenType = "whatgoeshere",
+                //ExpiresIn = long.MaxValue,
+                //ExtendedExpiresIn = long.MaxValue
+            };
+        }
+
+        public TokenResponse(MsalTokenResponse msalTokenResponse)
+        {
+            AccessToken = msalTokenResponse.AccessToken;
+            RefreshToken = msalTokenResponse.RefreshToken;
+            // todo: implement me
+            throw new NotImplementedException();
         }
 
         public string AccessToken { get; }

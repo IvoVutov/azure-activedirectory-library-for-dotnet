@@ -32,7 +32,11 @@ using Microsoft.Identity.Client.CacheV2.Impl;
 using Microsoft.Identity.Client.CacheV2.Impl.InMemory;
 using Microsoft.Identity.Client.CacheV2.Impl.Utils;
 using Microsoft.Identity.Client.CacheV2.Schema;
+using Microsoft.Identity.Client.Internal.Requests;
+using Microsoft.Identity.Core.Instance;
+using Microsoft.Identity.Core.Telemetry;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Test.Microsoft.Identity.Core.Unit.Mocks;
 
 namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
 {
@@ -87,21 +91,34 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
                     atItem
                 });
 
-            var cacheManager = new CacheManager(
-                _storageManager,
-                new AuthParameters
-                {
-                    AccountId = MsalTestConstants.HomeAccountId,
-                    Authority = new Uri(MsalTestConstants.AuthorityTestTenant),
-                    ClientId = MsalTestConstants.ClientId,
-                    RequestedScopes = MsalCacheV2TestConstants.Scope
-                });
+            using (var httpManager = new MockHttpManager())
+            {
+                httpManager.AddInstanceDiscoveryMockHandler();
 
-            Assert.IsTrue(cacheManager.TryReadCache(out var tokenResponse, out var accountResponse));
-            Assert.IsNotNull(tokenResponse);
-            Assert.IsNull(accountResponse);
+                var aadInstanceDiscovery = new AadInstanceDiscovery(httpManager, new TelemetryManager());
 
-            Assert.AreEqual(TheSecret, tokenResponse.AccessToken);
+                var cacheManager = new CacheManager(
+                    _storageManager,
+                    new AuthenticationRequestParameters
+                    {
+                        Account = MsalTestConstants.User,
+                        // AccountId = MsalTestConstants.HomeAccountId,
+                        // Authority = new Uri(MsalTestConstants.AuthorityTestTenant),
+                        Authority = Authority.CreateAuthority(
+                            new ValidatedAuthoritiesCache(),
+                            aadInstanceDiscovery,
+                            MsalTestConstants.AuthorityTestTenant,
+                            false),
+                        ClientId = MsalTestConstants.ClientId,
+                        Scope = new SortedSet<string>(MsalCacheV2TestConstants.Scope) // todo(mzuber):  WHY SORTED SET?
+                    });
+
+                Assert.IsTrue(cacheManager.TryReadCache(out var tokenResponse, out var accountResponse));
+                Assert.IsNotNull(tokenResponse);
+                Assert.IsNull(accountResponse);
+
+                Assert.AreEqual(TheSecret, tokenResponse.AccessToken);
+            }
         }
     }
 }

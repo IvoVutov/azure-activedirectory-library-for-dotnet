@@ -45,7 +45,7 @@ namespace Test.Microsoft.Identity.Unit.OAuth2Tests
         {
             // Need to get timestamp here since it needs to be before we create the token.
             // ExpireOn time is calculated from UtcNow when the object is created.
-            DateTimeOffset current = DateTimeOffset.UtcNow;
+            DateTime current = DateTime.UtcNow;
             const long ExpiresInSeconds = 3599;
 
             MsalTokenResponse response = new MsalTokenResponse

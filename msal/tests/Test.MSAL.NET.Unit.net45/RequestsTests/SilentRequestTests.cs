@@ -87,6 +87,7 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                     new TelemetryManager(),
                     aadInstanceDiscovery,
                     _validatedAuthoritiesCache,
+                    TokenCacheAdapterFactory.CreateStorageManagerForTests(),
                     MsalTestConstants.ClientId);
 
                 cacheAdapter.TokenCache = cache;
@@ -136,6 +137,7 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                     new TelemetryManager(),
                     aadInstanceDiscovery,
                     _validatedAuthoritiesCache,
+                    TokenCacheAdapterFactory.CreateStorageManagerForTests(),
                     MsalTestConstants.ClientId);
 
                 cacheAdapter.TokenCache = cache;
@@ -203,6 +205,7 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                     new TelemetryManager(),
                     aadInstanceDiscovery,
                     _validatedAuthoritiesCache,
+                    TokenCacheAdapterFactory.CreateStorageManagerForTests(),
                     MsalTestConstants.ClientId);
 
                 cacheAdapter.TokenCache = _cache;
@@ -259,6 +262,7 @@ namespace Test.MSAL.NET.Unit.RequestsTests
                     new TelemetryManager(),
                     aadInstanceDiscovery,
                     _validatedAuthoritiesCache,
+                    TokenCacheAdapterFactory.CreateStorageManagerForTests(),
                     MsalTestConstants.ClientId);
 
                 cacheAdapter.TokenCache = _cache;
