@@ -93,7 +93,7 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
 
             using (var httpManager = new MockHttpManager())
             {
-                httpManager.AddInstanceDiscoveryMockHandler();
+                //httpManager.AddInstanceDiscoveryMockHandler();
 
                 var aadInstanceDiscovery = new AadInstanceDiscovery(httpManager, new TelemetryManager());
 

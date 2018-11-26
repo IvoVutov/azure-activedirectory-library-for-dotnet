@@ -52,7 +52,7 @@ namespace Microsoft.Identity.Client.CacheV2
             msalTokenResponse = null;
             account = null;
 
-            string homeAccountId = _authParameters.Account.HomeAccountId.ToString();
+            string homeAccountId = _authParameters.Account.HomeAccountId.Identifier;
             var authority = new Uri(_authParameters.Authority.CanonicalAuthority);
             string environment = authority.GetEnvironment();
             string realm = authority.GetRealm();

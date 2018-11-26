@@ -89,7 +89,7 @@ namespace Microsoft.Identity.Client.CacheV2.Impl
         public ISet<string> DeclinedScopes { get; }
         public IdToken IdToken { get; set; } // TODO: set; here only exists for test...
         public string RefreshToken { get; }
-        public string RawClientInfo => ClientInfo.ToString();
+        public string RawClientInfo => ClientInfo?.ToString();
         public string Uid => JsonUtils.GetExistingOrEmptyString(ClientInfo, "uid");
         public string Utid => JsonUtils.GetExistingOrEmptyString(ClientInfo, "utid");
         public bool HasAccessToken => !string.IsNullOrWhiteSpace(AccessToken);

@@ -134,9 +134,11 @@ namespace Microsoft.Identity.Client.CacheV2
                 tokenResponse.Scope = ScopeUtils.JoinScopes(atItem.ScopeSet);
 
                 var msalIdTokenCacheItem = GetIdTokenCacheItem(new MsalIdTokenCacheKey(atItem.Environment, atItem.TenantId, atItem.HomeAccountId, atItem.ClientId), null);
-                tokenResponse.IdToken = msalIdTokenCacheItem.Secret;
-
-                account = new Account(msalIdTokenCacheItem.HomeAccountId, msalIdTokenCacheItem.IdToken.PreferredUsername, msalIdTokenCacheItem.Environment);
+                if (msalIdTokenCacheItem != null)
+                {
+                    tokenResponse.IdToken = msalIdTokenCacheItem.Secret;
+                    account = new Account(msalIdTokenCacheItem.HomeAccountId, msalIdTokenCacheItem.IdToken.PreferredUsername, msalIdTokenCacheItem.Environment);
+                }
             }
 
             if (rtItem != null)
