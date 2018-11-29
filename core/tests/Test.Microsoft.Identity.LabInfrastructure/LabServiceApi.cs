@@ -45,7 +45,29 @@ namespace Test.Microsoft.Identity.LabInfrastructure
             _keyVault = keyVault;
         }
 
-        private LabResponse GetLabResponseFromAPI(UserQueryParameters query)
+        private LabResponse GetLabResponseFromApi(UserQueryParameters query)
+        {
+            //Fetch user
+            string result = CreateLabQuery(query);
+
+            if (string.IsNullOrWhiteSpace(result))
+            {
+                throw new LabUserNotFoundException(query, "No lab user with specified parameters exists");
+            }
+
+            LabResponse response = JsonConvert.DeserializeObject<LabResponse>(result);
+
+            LabUser user = response.User;
+
+            user = JsonConvert.DeserializeObject<LabUser>(result);
+
+            if (!string.IsNullOrEmpty(user.HomeTenantId) && !string.IsNullOrEmpty(user.HomeUPN))
+                user.InitializeHomeUser();
+
+            return response;
+        }
+
+        private string CreateLabQuery(UserQueryParameters query)
         {
             HttpClient webClient = new HttpClient();
             IDictionary<string, string> queryDict = new Dictionary<string, string>();
@@ -86,27 +108,15 @@ namespace Test.Microsoft.Identity.LabInfrastructure
                 queryDict.Add("b2cProvider", "google");
             }
 
-            UriBuilder uriBuilder = new UriBuilder("http://api.msidlab.com/api/user");
-            uriBuilder.Query = string.Join("&", queryDict.Select(x => x.Key + "=" + x.Value.ToString()));
-
-            //Fetch user
-            string result = webClient.GetStringAsync(uriBuilder.ToString()).GetAwaiter().GetResult();
-
-            if (string.IsNullOrWhiteSpace(result))
+            if (query.UserContains != null)
             {
-                throw new LabUserNotFoundException(query, "No lab user with specified parameters exists");
+                queryDict.Add("usercontains", query.UserContains);
             }
 
-            LabResponse response = JsonConvert.DeserializeObject<LabResponse>(result);
-
-            LabUser user = response.User;
-
-            user = JsonConvert.DeserializeObject<LabUser>(result);
-
-            if (!string.IsNullOrEmpty(user.HomeTenantId) && !string.IsNullOrEmpty(user.HomeUPN))
-                user.InitializeHomeUser();
-
-            return response;
+            UriBuilder uriBuilder = new UriBuilder("http://api.msidlab.com/api/user");
+            uriBuilder.Query = string.Join("&", queryDict.Select(x => x.Key + "=" + x.Value.ToString()));
+            string result = webClient.GetStringAsync(uriBuilder.ToString()).GetAwaiter().GetResult();
+            return result;
         }
 
         /// <summary>
@@ -116,7 +126,7 @@ namespace Test.Microsoft.Identity.LabInfrastructure
         /// <returns>Users that match the given query parameters.</returns>
         public LabResponse GetLabResponse(UserQueryParameters query)
         {
-            var response = GetLabResponseFromAPI(query);
+            var response = GetLabResponseFromApi(query);
             var user = response.User;
 
             if (!Uri.IsWellFormedUriString(user.CredentialUrl, UriKind.Absolute))

@@ -40,7 +40,6 @@ namespace Test.Microsoft.Identity.LabInfrastructure
         static KeyVaultSecretsProvider _keyVaultSecretsProvider;
         static LabResponse _defaultLabResponse;
 
-
         static LabUserHelper()
         {
             _keyVaultSecretsProvider = new KeyVaultSecretsProvider();
@@ -52,6 +51,12 @@ namespace Test.Microsoft.Identity.LabInfrastructure
             IsMamUser = false,
             IsMfaUser = false,
             IsFederatedUser = false
+        };
+
+        public static UserQueryParameters MsaUserQuery => new UserQueryParameters
+        {
+            IsExternalUser = true,
+            UserContains = "MSIDLAB4_Outlook"
         };
 
         public static UserQueryParameters B2CLocalAccountUserQuery => new UserQueryParameters
@@ -90,6 +95,12 @@ namespace Test.Microsoft.Identity.LabInfrastructure
             }
 
             return _defaultLabResponse;
+        }
+
+        public static LabResponse GetMsaUser()
+        {
+            var user = MsaUserQuery;
+            return GetLabUserData(user);
         }
 
         public static LabResponse GetB2CLocalAccount()

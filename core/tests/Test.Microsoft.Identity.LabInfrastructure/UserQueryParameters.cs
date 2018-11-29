@@ -39,5 +39,6 @@ namespace Test.Microsoft.Identity.LabInfrastructure
         public UserType? UserType { get; set; }
         public bool? IsExternalUser { get; set; }
         public B2CIdentityProvider? B2CIdentityProvider { get; set; }
+        public string UserContains { get; set; }
     }
 }
