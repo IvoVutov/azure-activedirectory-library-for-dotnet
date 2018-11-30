@@ -43,10 +43,10 @@ namespace Microsoft.Identity.Client
     /// Class to be used for confidential client applications (Web Apps, Web APIs, and daemon applications).
     /// </summary>
     /// <remarks>
-    /// Confidential client applications are typically applications which run on servers (Web Apps, Web API, or even service/daemon applications). 
-    /// They are considered difficult to access, and therefore capable of keeping an application secret (hold configuration 
-    /// time secrets as these values would be difficult for end users to extract). 
-    /// A web app is the most common confidential client. The clientId is exposed through the web browser, but the secret is passed only in the back channel 
+    /// Confidential client applications are typically applications which run on servers (Web Apps, Web API, or even service/daemon applications).
+    /// They are considered difficult to access, and therefore capable of keeping an application secret (hold configuration
+    /// time secrets as these values would be difficult for end users to extract).
+    /// A web app is the most common confidential client. The clientId is exposed through the web browser, but the secret is passed only in the back channel
     /// and never directly exposed. For details see https://aka.ms/msal-net-client-applications
     /// </remarks>
     public sealed class ConfidentialClientApplication : ClientApplicationBase, IConfidentialClientApplication, IConfidentialClientApplicationWithCertificate
@@ -59,12 +59,12 @@ namespace Microsoft.Identity.Client
         /// <summary>
         /// Constructor for a confidential client application requesting tokens with the default authority (<see cref="ClientApplicationBase.DefaultAuthority"/>)
         /// </summary>
-        /// <param name="clientId">Client ID (also known as App ID) of the application as registered in the 
+        /// <param name="clientId">Client ID (also known as App ID) of the application as registered in the
         /// application registration portal (https://aka.ms/msal-net-register-app)/. REQUIRED</param>
         /// <param name="redirectUri">URL where the STS will call back the application with the security token. REQUIRED</param>
         /// <param name="clientCredential">Credential, previously shared with Azure AD during the application registration and proving the identity
         /// of the application. An instance of <see cref="ClientCredential"/> can be created either from an application secret, or a certificate. REQUIRED.</param>
-        /// <param name="userTokenCache">Token cache for saving user tokens. Can be set to null if the confidential client 
+        /// <param name="userTokenCache">Token cache for saving user tokens. Can be set to null if the confidential client
         /// application only uses the Client Credentials grants (that is requests token in its own name and not in the name of users).
         /// Otherwise should be provided. REQUIRED</param>
         /// <param name="appTokenCache">Token cache for saving application (that is client token). Can be set to <c>null</c> except if the application
@@ -73,7 +73,7 @@ namespace Microsoft.Identity.Client
         /// See https://aka.ms/msal-net-client-applications for a description of confidential client applications (and public client applications)
         /// Client credential grants are overrides of <see cref="ConfidentialClientApplication.AcquireTokenForClientAsync(IEnumerable{string})"/>
         /// </remarks>
-        /// <seealso cref="ConfidentialClientApplication"/> which 
+        /// <seealso cref="ConfidentialClientApplication"/> which
         /// enables app developers to specify the authority
         public ConfidentialClientApplication(string clientId, string redirectUri,
             ClientCredential clientCredential, ITokenCache userTokenCache, ITokenCache appTokenCache)
@@ -84,7 +84,7 @@ namespace Microsoft.Identity.Client
         /// <summary>
         /// Constructor for a confidential client application requesting tokens with a specified authority
         /// </summary>
-        /// <param name="clientId">Client ID (also named Application ID) of the application as registered in the 
+        /// <param name="clientId">Client ID (also named Application ID) of the application as registered in the
         /// application registration portal (https://aka.ms/msal-net-register-app)/. REQUIRED</param>
         /// <param name="authority">Authority of the security token service (STS) from which MSAL.NET will acquire the tokens.
         /// Usual authorities are:
@@ -95,12 +95,12 @@ namespace Microsoft.Identity.Client
         /// <item><description><c>https://login.microsoftonline.com/organizations/</c> to sign-in users with any work and school accounts</description></item>
         /// <item><description><c>https://login.microsoftonline.com/consumers/</c> to sign-in users with only personal Microsoft accounts(live)</description></item>
         /// </list>
-        /// Note that this setting needs to be consistent with what is declared in the application registration portal 
+        /// Note that this setting needs to be consistent with what is declared in the application registration portal
         /// </param>
         /// <param name="redirectUri">URL where the STS will call back the application with the security token. REQUIRED</param>
         /// <param name="clientCredential">Credential, previously shared with Azure AD during the application registration and proving the identity
         /// of the application. An instance of <see cref="ClientCredential"/> can be created either from an application secret, or a certificate. REQUIRED.</param>
-        /// <param name="userTokenCache">Token cache for saving user tokens. Can be set to null if the confidential client 
+        /// <param name="userTokenCache">Token cache for saving user tokens. Can be set to null if the confidential client
         /// application only uses the Client Credentials grants (that is requests token in its own name and not in the name of users).
         /// Otherwise should be provided. REQUIRED</param>
         /// <param name="appTokenCache">Token cache for saving application (that is client token). Can be set to <c>null</c> except if the application
@@ -109,17 +109,17 @@ namespace Microsoft.Identity.Client
         /// See https://aka.ms/msal-net-client-applications for a description of confidential client applications (and public client applications)
         /// Client credential grants are overrides of <see cref="ConfidentialClientApplication.AcquireTokenForClientAsync(IEnumerable{string})"/>
         /// </remarks>
-        /// <seealso cref="ConfidentialClientApplication"/> which 
+        /// <seealso cref="ConfidentialClientApplication"/> which
         /// enables app developers to create a confidential client application requesting tokens with the default authority.
         public ConfidentialClientApplication(string clientId, string authority, string redirectUri,
-            ClientCredential clientCredential, ITokenCache userTokenCache, ITokenCache appTokenCache)
-            : this(null, null, clientId, authority, redirectUri, clientCredential, userTokenCache, appTokenCache)
+            ClientCredential clientCredential, TokenCache userTokenCache, TokenCache appTokenCache)
+            : this(null, clientId, authority, redirectUri, clientCredential, userTokenCache, appTokenCache)
         {
         }
 
-        internal ConfidentialClientApplication(IHttpManager httpManager, ITelemetryManager telemetryManager, string clientId, string authority, string redirectUri,
-                                               ClientCredential clientCredential, ITokenCache userTokenCache, ITokenCache appTokenCache)
-            : base(clientId, authority, redirectUri, true, httpManager, telemetryManager)
+        internal ConfidentialClientApplication(IServiceBundle serviceBundle, string clientId, string authority, string redirectUri,
+                                               ClientCredential clientCredential, TokenCache userTokenCache, TokenCache appTokenCache)
+            : base(clientId, authority, redirectUri, true, serviceBundle)
         {
             ClientCredential = clientCredential;
 
@@ -135,9 +135,9 @@ namespace Microsoft.Identity.Client
         }
 
         /// <summary>
-        /// Acquires an access token for this application (usually a Web API) from the authority configured in the application, in order to access 
-        /// another downstream protected Web API on behalf of a user using the OAuth 2.0 On-Behalf-Of flow. (See https://aka.ms/msal-net-on-behalf-of). 
-        /// This confidential client application was itself called with a token which will be provided in the 
+        /// Acquires an access token for this application (usually a Web API) from the authority configured in the application, in order to access
+        /// another downstream protected Web API on behalf of a user using the OAuth 2.0 On-Behalf-Of flow. (See https://aka.ms/msal-net-on-behalf-of).
+        /// This confidential client application was itself called with a token which will be provided in the
         /// <paramref name="userAssertion">userAssertion</paramref> parameter.
         /// </summary>
         /// <param name="scopes">Scopes requested to access a protected API</param>
@@ -147,7 +147,7 @@ namespace Microsoft.Identity.Client
         /// <seealso cref="AcquireTokenOnBehalfOfAsync(IEnumerable{string}, UserAssertion, string)"/> for the on-behalf-of flow when specifying the authority
         public async Task<AuthenticationResult> AcquireTokenOnBehalfOfAsync(IEnumerable<string> scopes, UserAssertion userAssertion)
         {
-            Authority authority = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, Authority, ValidateAuthority);
+            Authority authority = Core.Instance.Authority.CreateAuthority(ServiceBundle, Authority, ValidateAuthority);
             return
                 await
                     AcquireTokenOnBehalfCommonAsync(authority, scopes, userAssertion, ApiEvent.ApiIds.AcquireTokenOnBehalfOfWithScopeUser, false)
@@ -155,9 +155,9 @@ namespace Microsoft.Identity.Client
         }
 
         /// <summary>
-        /// Acquires an access token for this application (usually a Web API) from a specific authority, in order to access 
-        /// another downstream protected Web API on behalf of a user (See https://aka.ms/msal-net-on-behalf-of). 
-        /// This confidential client application was itself called with a token which will be provided in the 
+        /// Acquires an access token for this application (usually a Web API) from a specific authority, in order to access
+        /// another downstream protected Web API on behalf of a user (See https://aka.ms/msal-net-on-behalf-of).
+        /// This confidential client application was itself called with a token which will be provided in the
         /// <paramref name="userAssertion">userAssertion</paramref> parameter.
         /// </summary>
         /// <param name="scopes">Scopes requested to access a protected API</param>
@@ -169,7 +169,7 @@ namespace Microsoft.Identity.Client
         public async Task<AuthenticationResult> AcquireTokenOnBehalfOfAsync(IEnumerable<string> scopes, UserAssertion userAssertion,
             string authority)
         {
-            Authority authorityInstance = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, authority, ValidateAuthority);
+            Authority authorityInstance = Core.Instance.Authority.CreateAuthority(ServiceBundle, authority, ValidateAuthority);
             return
                 await
                     AcquireTokenOnBehalfCommonAsync(authorityInstance, scopes, userAssertion, ApiEvent.ApiIds.AcquireTokenOnBehalfOfWithScopeUserAuthority, false)
@@ -177,9 +177,9 @@ namespace Microsoft.Identity.Client
         }
 
         /// <summary>
-        /// Acquires an access token for this application (usually a Web API) from the authority configured in the application, in order to access 
-        /// another downstream protected Web API on behalf of a user using the OAuth 2.0 On-Behalf-Of flow. (See https://aka.ms/msal-net-on-behalf-of). 
-        /// This confidential client application was itself called with a token which will be provided in the 
+        /// Acquires an access token for this application (usually a Web API) from the authority configured in the application, in order to access
+        /// another downstream protected Web API on behalf of a user using the OAuth 2.0 On-Behalf-Of flow. (See https://aka.ms/msal-net-on-behalf-of).
+        /// This confidential client application was itself called with a token which will be provided in the
         /// <paramref name="userAssertion">userAssertion</paramref> parameter.
         /// This override sends the certificate, which helps certificate rotation in Azure AD
         /// </summary>
@@ -189,7 +189,7 @@ namespace Microsoft.Identity.Client
         /// <returns>Authentication result containing a token for the requested scopes and account</returns>
         async Task<AuthenticationResult> IConfidentialClientApplicationWithCertificate.AcquireTokenOnBehalfOfWithCertificateAsync(IEnumerable<string> scopes, UserAssertion userAssertion)
         {
-            Authority authority = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, Authority, ValidateAuthority);
+            Authority authority = Core.Instance.Authority.CreateAuthority(ServiceBundle, Authority, ValidateAuthority);
             return
                 await
                     AcquireTokenOnBehalfCommonAsync(authority, scopes, userAssertion, ApiEvent.ApiIds.AcquireTokenOnBehalfOfWithScopeUser, true)
@@ -197,9 +197,9 @@ namespace Microsoft.Identity.Client
         }
 
         /// <summary>
-        /// Acquires an access token for this application (usually a Web API) from a specific authority, in order to access 
-        /// another downstream protected Web API on behalf of a user (See https://aka.ms/msal-net-on-behalf-of). 
-        /// This confidential client application was itself called with a token which will be provided in the 
+        /// Acquires an access token for this application (usually a Web API) from a specific authority, in order to access
+        /// another downstream protected Web API on behalf of a user (See https://aka.ms/msal-net-on-behalf-of).
+        /// This confidential client application was itself called with a token which will be provided in the
         /// This override sends the certificate, which helps certificate rotation in Azure AD
         /// <paramref name="userAssertion">userAssertion</paramref> parameter.
         /// </summary>
@@ -211,7 +211,7 @@ namespace Microsoft.Identity.Client
         async Task<AuthenticationResult> IConfidentialClientApplicationWithCertificate.AcquireTokenOnBehalfOfWithCertificateAsync(IEnumerable<string> scopes, UserAssertion userAssertion,
             string authority)
         {
-            Authority authorityInstance = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, authority, ValidateAuthority);
+            Authority authorityInstance = Core.Instance.Authority.CreateAuthority(ServiceBundle, authority, ValidateAuthority);
             return
                 await
                     AcquireTokenOnBehalfCommonAsync(authorityInstance, scopes, userAssertion, ApiEvent.ApiIds.AcquireTokenOnBehalfOfWithScopeUserAuthority, true)
@@ -222,7 +222,7 @@ namespace Microsoft.Identity.Client
         /// Acquires a security token from the authority configured in the app using the authorization code previously received from the STS. It uses
         /// the OAuth 2.0 authorization code flow (See https://aka.ms/msal-net-authorization-code).
         /// It's usually used in Web Apps (for instance ASP.NET / ASP.NET Core Web apps) which sign-in users, and therefore receive an authorization code.
-        /// This method does not lookup the token cache, but stores the result in it, so it can be looked up using other methods 
+        /// This method does not lookup the token cache, but stores the result in it, so it can be looked up using other methods
         /// such as <see cref="IClientApplicationBase.AcquireTokenSilentAsync(IEnumerable{string}, IAccount)"/>.
         /// </summary>
         /// <param name="authorizationCode">The authorization code received from service authorization endpoint.</param>
@@ -243,7 +243,7 @@ namespace Microsoft.Identity.Client
         /// </summary>
         /// <param name="scopes">scopes requested to access a protected API. For this flow (client credentials), the scopes
         /// should be of the form "{ResourceIdUri/.default}" for instance <c>https://management.azure.net/.default</c> or, for Microsoft
-        /// Graph, <c>https://graph.microsoft.com/.default</c> as the requested scopes are really defined statically at application registration 
+        /// Graph, <c>https://graph.microsoft.com/.default</c> as the requested scopes are really defined statically at application registration
         /// in the portal, and cannot be overriden in the application. See also </param>
         /// <returns>Authentication result containing the token of the user for the requested scopes</returns>
         public async Task<AuthenticationResult> AcquireTokenForClientAsync(IEnumerable<string> scopes)
@@ -258,7 +258,7 @@ namespace Microsoft.Identity.Client
         /// </summary>
         /// <param name="scopes">Scopes requested to access a protected API. For this flow (client credentials), the scopes
         /// should be of the form "{ResourceIdUri/.default}" for instance <c>https://management.azure.net/.default</c> or, for Microsoft
-        /// Graph, <c>https://graph.microsoft.com/.default</c> as the requested scopes are really defined statically at application registration 
+        /// Graph, <c>https://graph.microsoft.com/.default</c> as the requested scopes are really defined statically at application registration
         /// in the portal, and cannot be overriden in the application</param>
         /// <param name="forceRefresh">If <c>true</c>, API will ignore the access token in the cache and attempt to acquire new access token using client credentials.
         /// This override can be used in case the application knows that conditional access policies changed</param>
@@ -307,50 +307,50 @@ namespace Microsoft.Identity.Client
         }
 
         /// <summary>
-        /// Computes the URL of the authorization request letting the user sign-in and consent to the application accessing specific scopes in 
-        /// the user's name. The URL targets the /authorize endpoint of the authority configured in the application. 
+        /// Computes the URL of the authorization request letting the user sign-in and consent to the application accessing specific scopes in
+        /// the user's name. The URL targets the /authorize endpoint of the authority configured in the application.
         /// This override enables you to specify a login hint and extra query parameter.
         /// </summary>
         /// <param name="scopes">Scopes requested to access a protected API</param>
         /// <param name="loginHint">Identifier of the user. Generally a UPN. This can be empty</param>
-        /// <param name="extraQueryParameters">This parameter will be appended as is to the query string in the HTTP authentication request to the authority. 
+        /// <param name="extraQueryParameters">This parameter will be appended as is to the query string in the HTTP authentication request to the authority.
         /// This is expected to be a string of segments of the form <c>key=value</c> separated by an ampersand character.
         /// The parameter can be null.</param>
         /// <returns>URL of the authorize endpoint including the query parameters.</returns>
         public async Task<Uri> GetAuthorizationRequestUrlAsync(IEnumerable<string> scopes, string loginHint,
             string extraQueryParameters)
         {
-            Authority authority = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, Authority, ValidateAuthority);
+            Authority authority = Core.Instance.Authority.CreateAuthority(ServiceBundle, Authority, ValidateAuthority);
             var requestParameters =
                 CreateRequestParameters(authority, scopes, null, UserTokenCacheAdapter);
             requestParameters.ClientId = ClientId;
             requestParameters.ExtraQueryParameters = extraQueryParameters;
 
             var handler =
-                new InteractiveRequest(HttpManager, CryptographyManager, TelemetryManager, ValidatedAuthoritiesCache, AadInstanceDiscovery, requestParameters, ApiEvent.ApiIds.None, null, loginHint, UIBehavior.SelectAccount, null);
+                new InteractiveRequest(ServiceBundle, requestParameters, ApiEvent.ApiIds.None, null, loginHint, UIBehavior.SelectAccount, null);
             return await handler.CreateAuthorizationUriAsync().ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Computes the URL of the authorization request letting the user sign-in and consent to the application accessing specific scopes in 
-        /// the user's name. The URL targets the /authorize endpoint of the authority specified as the <paramref name="authority"/> parameter. 
+        /// Computes the URL of the authorization request letting the user sign-in and consent to the application accessing specific scopes in
+        /// the user's name. The URL targets the /authorize endpoint of the authority specified as the <paramref name="authority"/> parameter.
         /// This override enables you to specify a redirectUri, login hint extra query parameters, extra scope to consent (which are not for the
         /// same resource as the <paramref name="scopes"/>), and an authority.
         /// </summary>
         /// <param name="scopes">Scopes requested to access a protected API (a resource)</param>
         /// <param name="redirectUri">Address to return to upon receiving a response from the authority.</param>
         /// <param name="loginHint">Identifier of the user. Generally a UPN.</param>
-        /// <param name="extraQueryParameters">This parameter will be appended as is to the query string in the HTTP authentication request to the authority. 
+        /// <param name="extraQueryParameters">This parameter will be appended as is to the query string in the HTTP authentication request to the authority.
         /// This is expected to be a string of segments of the form <c>key=value</c> separated by an ampersand character.
         /// The parameter can be null.</param>
-        /// <param name="extraScopesToConsent">Scopes for additional resources (other than the resource for which <paramref name="scopes"/> are requested), 
+        /// <param name="extraScopesToConsent">Scopes for additional resources (other than the resource for which <paramref name="scopes"/> are requested),
         /// which a developer can request the user to consent to upfront.</param>
         /// <param name="authority">Specific authority for which the token is requested. Passing a different value than configured does not change the configured value</param>
         /// <returns>URL of the authorize endpoint including the query parameters.</returns>
         public async Task<Uri> GetAuthorizationRequestUrlAsync(IEnumerable<string> scopes, string redirectUri, string loginHint,
             string extraQueryParameters, IEnumerable<string> extraScopesToConsent, string authority)
         {
-            Authority authorityInstance = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, authority, ValidateAuthority);
+            Authority authorityInstance = Core.Instance.Authority.CreateAuthority(ServiceBundle, authority, ValidateAuthority);
             var requestParameters = CreateRequestParameters(authorityInstance, scopes, null,
                 UserTokenCacheAdapter);
             requestParameters.RedirectUri = new Uri(redirectUri);
@@ -358,11 +358,7 @@ namespace Microsoft.Identity.Client
             requestParameters.ExtraQueryParameters = extraQueryParameters;
 
             var handler = new InteractiveRequest(
-                HttpManager,
-                CryptographyManager,
-                TelemetryManager,
-                ValidatedAuthoritiesCache,
-                AadInstanceDiscovery,
+                ServiceBundle,
                 requestParameters,
                 ApiEvent.ApiIds.None,
                 extraScopesToConsent,
@@ -378,23 +374,27 @@ namespace Microsoft.Identity.Client
 
         internal ITokenCache AppTokenCache
         {
-            get => AppTokenCacheAdapter.TokenCache;
-            private set => AppTokenCacheAdapter.TokenCache = value;
+            get => _appTokenCache;
+            private set
+            {
+                _appTokenCache = value;
+                if (_appTokenCache != null)
+                {
+                    _appTokenCache.ClientId = ClientId;
+                    _appTokenCache.ServiceBundle = ServiceBundle;
+                }
+            }
         }
 
         private async Task<AuthenticationResult> AcquireTokenForClientCommonAsync(IEnumerable<string> scopes, bool forceRefresh, ApiEvent.ApiIds apiId, bool sendCertificate)
         {
-            Authority authority = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, Authority, ValidateAuthority);
+            Authority authority = Core.Instance.Authority.CreateAuthority(ServiceBundle, Authority, ValidateAuthority);
             AuthenticationRequestParameters parameters = CreateRequestParameters(authority, scopes, null,
                 AppTokenCacheAdapter);
             parameters.IsClientCredentialRequest = true;
             parameters.SendCertificate = sendCertificate;
             var handler = new ClientCredentialRequest(
-                HttpManager,
-                CryptographyManager,
-                TelemetryManager,
-                ValidatedAuthoritiesCache,
-                AadInstanceDiscovery,
+                ServiceBundle,
                 parameters,
                 apiId,
                 forceRefresh);
@@ -409,11 +409,7 @@ namespace Microsoft.Identity.Client
             requestParams.UserAssertion = userAssertion;
             requestParams.SendCertificate = sendCertificate;
             var handler = new OnBehalfOfRequest(
-                HttpManager,
-                CryptographyManager,
-                TelemetryManager,
-                ValidatedAuthoritiesCache,
-                AadInstanceDiscovery,
+                ServiceBundle,
                 requestParams,
                 apiId);
             return await handler.RunAsync(CancellationToken.None).ConfigureAwait(false);
@@ -422,17 +418,13 @@ namespace Microsoft.Identity.Client
         private async Task<AuthenticationResult> AcquireTokenByAuthorizationCodeCommonAsync(string authorizationCode,
             IEnumerable<string> scopes, Uri redirectUri, ApiEvent.ApiIds apiId, bool sendCertificate)
         {
-            Authority authority = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, Authority, ValidateAuthority);
-            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCacheAdapter);
+            Authority authority = Core.Instance.Authority.CreateAuthority(ServiceBundle, Authority, ValidateAuthority);
+            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCache);
             requestParams.AuthorizationCode = authorizationCode;
             requestParams.RedirectUri = redirectUri;
             requestParams.SendCertificate = sendCertificate;
             var handler = new AuthorizationCodeRequest(
-                HttpManager,
-                CryptographyManager,
-                TelemetryManager,
-                ValidatedAuthoritiesCache,
-                AadInstanceDiscovery,
+                ServiceBundle,
                 requestParams,
                 apiId);
             return await handler.RunAsync(CancellationToken.None).ConfigureAwait(false);

@@ -1,20 +1,20 @@
 ﻿// ------------------------------------------------------------------------------
-// 
+//
 // Copyright (c) Microsoft Corporation.
 // All rights reserved.
-// 
+//
 // This code is licensed under the MIT License.
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -22,7 +22,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-// 
+//
 // ------------------------------------------------------------------------------
 
 using System;
@@ -36,6 +36,7 @@ using Microsoft.Identity.Core.OAuth2;
 
 namespace Microsoft.Identity.Client.CacheV2
 {
+    /// <inheritdoc />
     internal class CacheManager : ICacheManager
     {
         private readonly AuthenticationRequestParameters _authParameters;
@@ -47,6 +48,7 @@ namespace Microsoft.Identity.Client.CacheV2
             _authParameters = authParameters;
         }
 
+        /// <inheritdoc />
         public bool TryReadCache(out MsalTokenResponse msalTokenResponse, out IAccount account)
         {
             msalTokenResponse = null;
@@ -167,10 +169,10 @@ namespace Microsoft.Identity.Client.CacheV2
                 return false;
             }
 
-            Microsoft.Identity.Client.CacheV2.Impl.IdToken idTokenJwt = null;
+            IdToken idTokenJwt = null;
             if (idToken != null)
             {
-                idTokenJwt = new Microsoft.Identity.Client.CacheV2.Impl.IdToken(idToken.Secret);
+                idTokenJwt = new IdToken(idToken.Secret);
             }
 
             if (accessToken != null)
@@ -195,6 +197,7 @@ namespace Microsoft.Identity.Client.CacheV2
             return true;
         }
 
+        /// <inheritdoc />
         public IAccount CacheTokenResponse(MsalTokenResponse msalTokenResponse)
         {
             var tokenResponse = new TokenResponse(msalTokenResponse);
@@ -300,6 +303,7 @@ namespace Microsoft.Identity.Client.CacheV2
             return account;
         }
 
+        /// <inheritdoc />
         public void DeleteCachedRefreshToken()
         {
             string homeAccountId = _authParameters.Account.HomeAccountId.ToString();
@@ -357,7 +361,7 @@ namespace Microsoft.Identity.Client.CacheV2
             }
         }
 
-        internal static string GetLocalAccountId(Microsoft.Identity.Client.CacheV2.Impl.IdToken idTokenJwt)
+        internal static string GetLocalAccountId(IdToken idTokenJwt)
         {
             string localAccountId = idTokenJwt.Oid;
             if (string.IsNullOrWhiteSpace(localAccountId))

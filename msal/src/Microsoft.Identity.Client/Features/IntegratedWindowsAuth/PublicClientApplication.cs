@@ -64,7 +64,7 @@ namespace Microsoft.Identity.Client
         /// The account used in this overrides is pulled from the operating system as the current user principal name
         /// </summary>
         /// <param name="scopes">Scopes requested to access a protected API</param>
-        /// <param name="username">Identifier of the user account for which to acquire a token with Integrated Windows authentication. 
+        /// <param name="username">Identifier of the user account for which to acquire a token with Integrated Windows authentication.
         /// Generally in UserPrincipalName (UPN) format, e.g. john.doe@contoso.com</param>
         /// <returns>Authentication result containing a token for the requested scopes and for the currently logged-in user in Windows</returns>
         public async Task<AuthenticationResult> AcquireTokenByIntegratedWindowsAuthAsync(
@@ -77,15 +77,10 @@ namespace Microsoft.Identity.Client
 
         private async Task<AuthenticationResult> AcquireTokenByIWAAsync(IEnumerable<string> scopes, IntegratedWindowsAuthInput iwaInput)
         {
-            Authority authority = Core.Instance.Authority.CreateAuthority(ValidatedAuthoritiesCache, AadInstanceDiscovery, Authority, ValidateAuthority);
-            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCacheAdapter);
+            Authority authority = Core.Instance.Authority.CreateAuthority(ServiceBundle, Authority, ValidateAuthority);
+            var requestParams = CreateRequestParameters(authority, scopes, null, UserTokenCache);
             var handler = new IntegratedWindowsAuthRequest(
-                HttpManager,
-                CryptographyManager,
-                TelemetryManager,
-                ValidatedAuthoritiesCache,
-                AadInstanceDiscovery,
-                WsTrustWebRequestManager,
+                ServiceBundle,
                 requestParams,
                 ApiEvent.ApiIds.AcquireTokenWithScopeUser,
                 iwaInput);

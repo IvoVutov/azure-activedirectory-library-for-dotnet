@@ -1,20 +1,20 @@
 ﻿// ------------------------------------------------------------------------------
-// 
+//
 // Copyright (c) Microsoft Corporation.
 // All rights reserved.
-// 
+//
 // This code is licensed under the MIT License.
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -22,7 +22,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-// 
+//
 // ------------------------------------------------------------------------------
 
 using System;
@@ -33,8 +33,8 @@ using Microsoft.Identity.Client.CacheV2.Impl.InMemory;
 using Microsoft.Identity.Client.CacheV2.Impl.Utils;
 using Microsoft.Identity.Client.CacheV2.Schema;
 using Microsoft.Identity.Client.Internal.Requests;
+using Microsoft.Identity.Core;
 using Microsoft.Identity.Core.Instance;
-using Microsoft.Identity.Core.Telemetry;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Test.Microsoft.Identity.Core.Unit.Mocks;
 
@@ -64,11 +64,6 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
             _tokenCache.BindToStorageManager(_storageManager);
         }
 
-        [TestCleanup]
-        public void TestCleanup()
-        {
-        }
-
         [TestMethod]
         [TestCategory("TokenCacheTests")]
         public void GetExactScopesMatchedAccessTokenTest()
@@ -93,20 +88,26 @@ namespace Test.MSAL.NET.Unit.net45.CacheV2Tests
 
             using (var httpManager = new MockHttpManager())
             {
-                //httpManager.AddInstanceDiscoveryMockHandler();
-
-                var aadInstanceDiscovery = new AadInstanceDiscovery(httpManager, new TelemetryManager());
+                var serviceBundle = ServiceBundle.CreateWithCustomHttpManager(httpManager);
 
                 var cacheManager = new CacheManager(
                     _storageManager,
                     new AuthenticationRequestParameters
                     {
                         Account = MsalTestConstants.User,
+
+                        // TODO:  In MSALC++, the request parameters only really needs the
+                        // Authority URI itself since the cache isn't meant to
+                        // do ANY network calls.
+                        // So it would be great if we could reduce the complexity/dependencies
+                        // here and do any of the validated authority cache / instance discovery
+                        // outside of the context of the authentication parameters and
+                        // cache interaction and just track the authority we're using...
+
                         // AccountId = MsalTestConstants.HomeAccountId,
                         // Authority = new Uri(MsalTestConstants.AuthorityTestTenant),
                         Authority = Authority.CreateAuthority(
-                            new ValidatedAuthoritiesCache(),
-                            aadInstanceDiscovery,
+                            serviceBundle,
                             MsalTestConstants.AuthorityTestTenant,
                             false),
                         ClientId = MsalTestConstants.ClientId,

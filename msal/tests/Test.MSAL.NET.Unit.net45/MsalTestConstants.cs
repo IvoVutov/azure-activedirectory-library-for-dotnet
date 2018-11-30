@@ -27,11 +27,8 @@
 
 using System.Collections.Generic;
 using System.Globalization;
-using System.Security;
 using Microsoft.Identity.Client;
-using Microsoft.Identity.Client.Internal;
 using Microsoft.Identity.Core.Cache;
-using Microsoft.Identity.Core.Helpers;
 
 namespace Test.MSAL.NET.Unit
 {

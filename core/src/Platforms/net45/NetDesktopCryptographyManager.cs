@@ -55,6 +55,14 @@ namespace Microsoft.Identity.Core
             return string.IsNullOrEmpty(input) ? null : Convert.ToBase64String(CreateSha256HashBytes(input));
         }
 
+        public byte[] CreateSha256HashBytes(string input)
+        {
+            using (var sha = new SHA256Cng())
+            {
+                return sha.ComputeHash(Encoding.UTF8.GetBytes(input));
+            }
+        }
+
         public string Encrypt(string message)
         {
             throw new NotImplementedException();
@@ -73,14 +81,6 @@ namespace Microsoft.Identity.Core
         public byte[] Decrypt(byte[] encryptedMessage)
         {
             throw new NotImplementedException();
-        }
-
-        public byte[] CreateSha256HashBytes(string input)
-        {
-            using (var sha = new SHA256Cng())
-            {
-                return sha.ComputeHash(Encoding.UTF8.GetBytes(input));
-            }
         }
     }
 }

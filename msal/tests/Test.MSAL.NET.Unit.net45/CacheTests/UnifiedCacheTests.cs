@@ -1,20 +1,20 @@
 ﻿// ------------------------------------------------------------------------------
-// 
+//
 // Copyright (c) Microsoft Corporation.
 // All rights reserved.
-// 
+//
 // This code is licensed under the MIT License.
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions :
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
@@ -22,7 +22,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-// 
+//
 // ------------------------------------------------------------------------------
 
 using System;
@@ -57,6 +57,8 @@ namespace Test.MSAL.NET.Unit
         {
             using (var httpManager = new MockHttpManager())
             {
+                var serviceBundle = ServiceBundle.CreateWithCustomHttpManager(httpManager);
+
                 httpManager.AddInstanceDiscoveryMockHandler();
 
                 var legacyCachePersistence = new TestLegacyCachePersistance();
@@ -66,8 +68,7 @@ namespace Test.MSAL.NET.Unit
                 };
 
                 PublicClientApplication app = new PublicClientApplication(
-                    httpManager,
-                    null,
+                    serviceBundle,
                     MsalTestConstants.ClientId,
                     ClientApplicationBase.DefaultAuthority)
                 {
@@ -89,11 +90,11 @@ namespace Test.MSAL.NET.Unit
                 Assert.IsTrue(adalCacheDictionary.Count == 1);
 
                 var requestContext = new RequestContext(null, new MsalLogger(Guid.Empty, null));
-                var users =
-                    app.UserTokenCacheAdapter.GetAccounts(MsalTestConstants.AuthorityCommonTenant, false, requestContext);
-                foreach (IAccount user in users)
+                var accounts =
+                    app.UserTokenCache.GetAccounts(MsalTestConstants.AuthorityCommonTenant, false, requestContext);
+                foreach (IAccount account in accounts)
                 {
-                    app.UserTokenCacheAdapter.RemoveMsalAccount(user, requestContext);
+                    app.UserTokenCache.RemoveMsalAccount(account, requestContext);
                 }
 
                 httpManager.AddMockHandler(
@@ -129,6 +130,7 @@ namespace Test.MSAL.NET.Unit
 
             using (var httpManager = new MockHttpManager())
             {
+                var serviceBundle = ServiceBundle.CreateWithCustomHttpManager(httpManager);
                 // login to app
                 var tokenCache = new TokenCache();
                 tokenCache.SetBeforeAccess((TokenCacheNotificationArgs args) =>
@@ -141,8 +143,7 @@ namespace Test.MSAL.NET.Unit
                     });
 
                 PublicClientApplication app = new PublicClientApplication(
-                    httpManager,
-                    new TelemetryManager(),
+                    serviceBundle,
                     MsalTestConstants.ClientId,
                     ClientApplicationBase.DefaultAuthority)
                 {
@@ -175,8 +176,7 @@ namespace Test.MSAL.NET.Unit
                 });
 
                 PublicClientApplication app1 = new PublicClientApplication(
-                    httpManager,
-                    new TelemetryManager(),
+                    serviceBundle,
                     MsalTestConstants.ClientId_1,
                     ClientApplicationBase.DefaultAuthority)
                 {
@@ -185,7 +185,7 @@ namespace Test.MSAL.NET.Unit
 
                 MsalMockHelpers.ConfigureMockWebUI(new AuthorizationResult(AuthorizationStatus.Success,
                                                                            app.RedirectUri + "?code=some-code"));
-                
+
                 httpManager.AddSuccessTokenResponseMockHandlerForPost();
 
                 result = app1.AcquireTokenAsync(MsalTestConstants.Scope).Result;
@@ -217,15 +217,9 @@ namespace Test.MSAL.NET.Unit
         {
             using (var httpManager = new MockHttpManager())
             {
-                var legacyCachePersistence = new TestLegacyCachePersistance();
-                var tokenCache = new TokenCache
-                {
-                    LegacyCachePersistence = new TestLegacyCachePersistance()
-                };
-
+                var serviceBundle = ServiceBundle.CreateWithCustomHttpManager(httpManager);
                 var app = new PublicClientApplication(
-                    httpManager,
-                    null,
+                    serviceBundle,
                     MsalTestConstants.ClientId,
                     ClientApplicationBase.DefaultAuthority)
                 {

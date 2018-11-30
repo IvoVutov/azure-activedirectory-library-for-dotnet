@@ -37,6 +37,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Internal;
+using Microsoft.Identity.Core;
 using Microsoft.Identity.Core.Helpers;
 using Microsoft.Identity.Core.Instance;
 using Microsoft.Identity.Core.Telemetry;
@@ -93,6 +94,8 @@ namespace Test.MSAL.NET.Unit
         {
             using (var httpManager = new MockHttpManager())
             {
+                var serviceBundle = ServiceBundle.CreateWithCustomHttpManager(httpManager);
+
                 SetupMocks(httpManager);
                 var certificate = new X509Certificate2(
                     ResourceHelper.GetTestResourceRelativePath("valid_cert.pfx"),
@@ -101,8 +104,7 @@ namespace Test.MSAL.NET.Unit
                 var clientAssertion = new ClientAssertionCertificate(certificate);
                 var clientCredential = new ClientCredential(clientAssertion);
                 var app = new ConfidentialClientApplication(
-                    httpManager,
-                    new TelemetryManager(),
+                    serviceBundle,
                     MsalTestConstants.ClientId,
                     ClientApplicationBase.DefaultAuthority,
                     MsalTestConstants.RedirectUri,
@@ -131,6 +133,7 @@ namespace Test.MSAL.NET.Unit
         {
             using (var httpManager = new MockHttpManager())
             {
+                var serviceBundle = ServiceBundle.CreateWithCustomHttpManager(httpManager);
                 SetupMocks(httpManager);
 
                 var certificate = new X509Certificate2(
@@ -139,8 +142,7 @@ namespace Test.MSAL.NET.Unit
                 var clientAssertion = new ClientAssertionCertificate(certificate);
                 var clientCredential = new ClientCredential(clientAssertion);
                 var app = new ConfidentialClientApplication(
-                    httpManager,
-                    new TelemetryManager(),
+                    serviceBundle,
                     MsalTestConstants.ClientId,
                     ClientApplicationBase.DefaultAuthority,
                     MsalTestConstants.RedirectUri,
